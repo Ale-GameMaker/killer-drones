@@ -9,15 +9,13 @@ const LANGUAGE_KEY = "killer-drones-language";
 const SETTINGS_KEY = "killer-drones-settings";
 const SAVE_PREFIX = "killer-drones-save-";
 
-const SAVE_VERSION = 3;
+const SAVE_VERSION = 4;
 const SAVE_SLOTS = 6;
 
 const DEFAULT_SETTINGS = {
     showFPS: true,
     quality: "high",
     effects: true,
-    weather: true,
-    crt: true,
     textSpeed: 25,
     masterVolume: 1,
     musicVolume: 0.35,
@@ -57,7 +55,6 @@ const UI_TEXT = {
         continue: "CONTINUE",
         load: "LOAD",
         settings: "SETTINGS",
-        credits: "CREDITS",
         back: "BACK",
         settingsTitle: "SETTINGS",
         language: "LANGUAGE",
@@ -84,8 +81,6 @@ const UI_TEXT = {
         fps: "SHOW FPS",
         quality: "QUALITY",
         effects: "VISUAL EFFECTS / SHADERS",
-        weather: "WEATHER",
-        crt: "CRT EFFECT",
         textSpeed: "TEXT SPEED",
         volume: "MASTER VOLUME",
         musicVolume: "MUSIC VOLUME",
@@ -98,10 +93,6 @@ const UI_TEXT = {
         fast: "FAST",
         normal: "NORMAL",
         slow: "SLOW",
-        creditsTitle: "CREDITS",
-        creditsBy: "CREATED BY ALE_GAMEPLAYER2003",
-        creditsProject: "WEB VISUAL NOVEL / AU PROJECT",
-        creditsVersion: "VERSION 0.2.0",
         loading: [
             "INITIALIZING SYSTEM",
             "LOADING ASSETS",
@@ -116,7 +107,6 @@ const UI_TEXT = {
         continue: "CONTINUAR",
         load: "CARREGAR",
         settings: "CONFIGURAÇÕES",
-        credits: "CRÉDITOS",
         back: "VOLTAR",
         settingsTitle: "CONFIGURAÇÕES",
         language: "IDIOMA",
@@ -143,8 +133,6 @@ const UI_TEXT = {
         fps: "MOSTRAR FPS",
         quality: "QUALIDADE",
         effects: "EFEITOS VISUAIS / SHADERS",
-        weather: "CLIMA",
-        crt: "EFEITO CRT",
         textSpeed: "VELOCIDADE DO TEXTO",
         volume: "VOLUME GERAL",
         musicVolume: "VOLUME DA MÚSICA",
@@ -157,14 +145,6 @@ const UI_TEXT = {
         fast: "RÁPIDA",
         normal: "NORMAL",
         slow: "LENTA",
-        creditsTitle: "CRÉDITOS",
-        creditsBy: "CRIADO POR ALE_GAMEPLAYER2003",
-        creditsProject: "VISUAL NOVEL WEB / PROJETO AU",
-        creditsVersion: "VERSÃO 0.2.0",
-        creditsTitle: "CRÉDITOS",
-        creditsBy: "CREADO POR ALE_GAMEPLAYER2003",
-        creditsProject: "VISUAL NOVEL WEB / PROYECTO AU",
-        creditsVersion: "VERSIÓN 0.2.0",
         loading: [
             "INICIALIZANDO SISTEMA",
             "CARREGANDO RECURSOS",
@@ -179,7 +159,6 @@ const UI_TEXT = {
         continue: "CONTINUAR",
         load: "CARGAR",
         settings: "CONFIGURACIÓN",
-        credits: "CRÉDITOS",
         back: "VOLVER",
         settingsTitle: "CONFIGURACIÓN",
         language: "IDIOMA",
@@ -206,8 +185,6 @@ const UI_TEXT = {
         fps: "MOSTRAR FPS",
         quality: "CALIDAD",
         effects: "EFECTOS VISUALES / SHADERS",
-        weather: "CLIMA",
-        crt: "EFECTO CRT",
         textSpeed: "VELOCIDAD DEL TEXTO",
         volume: "VOLUMEN GENERAL",
         musicVolume: "VOLUMEN DE MÚSICA",
@@ -253,6 +230,7 @@ let currentMusicName = null;
 let storyStarted = false;
 let chapterFinished = false;
 let activeSaveSlot = null;
+let choiceHistory = {};
 
 let saveMode = "load";
 let saveReturnTo = "title";
@@ -339,8 +317,6 @@ function normalizeSettings() {
     }
 
     settings.effects = Boolean(settings.effects);
-    settings.weather = Boolean(settings.weather);
-    settings.crt = Boolean(settings.crt);
     settings.showFPS = Boolean(settings.showFPS);
 
     settings.textSpeed = clamp(Number(settings.textSpeed) || 25, 5, 80);
@@ -357,15 +333,14 @@ function cacheDOM() {
     const ids = [
         "loading-screen", "loading-progress", "loading-percent",
         "title-screen", "game-subtitle", "start-button", "continue-button",
-        "load-title-button", "settings-button", "credits-button",
+        "load-title-button", "settings-button",
 
         "settings-screen", "settings-title", "settings-language-label",
-        "credits-screen", "credits-title", "credits-back-button", "credits-grid",
         "settings-back-button",
 
-        "settings-fps", "settings-quality", "settings-effects", "settings-weather", "settings-crt",
+        "settings-fps", "settings-quality", "settings-effects",
         "settings-text-speed", "settings-volume", "settings-music-volume",
-        "settings-sfx-volume", "settings-text-speed-value",
+        "settings-sfx-volume",
 
         "fps-counter",
 
@@ -376,7 +351,7 @@ function cacheDOM() {
         "alice", "z", "dialogue-box", "speaker", "dialogue-text",
         "next-button", "vn-menu-button", "vn-menu", "vn-menu-title",
         "vn-continue", "vn-back-line", "vn-save", "vn-load",
-        "vn-back-menu", "vn-close",
+        "vn-back-menu", "vn-close", "choice-container",
 
         "menu-music", "menu2-music", "story-music",
         "text-sound", "button-sound", "vignette"
@@ -401,7 +376,6 @@ function showScreen(screen) {
         dom.loadingScreen,
         dom.titleScreen,
         dom.settingsScreen,
-        dom.creditsScreen,
         dom.saveScreen,
         dom.storyScreen
     ];
@@ -429,19 +403,8 @@ function updateUI() {
     setText(dom.continueButton, ui.continue);
     setText(dom.loadTitleButton, ui.load);
     setText(dom.settingsButton, ui.settings);
-    setText(dom.creditsButton, ui.credits);
 
     setText(dom.settingsTitle, ui.settingsTitle);
-    setText(dom.creditsTitle, ui.creditsTitle);
-    setText(dom.creditsBackButton, ui.back);
-
-    const creditsBy = document.querySelector(".credits-by");
-    const creditsProject = document.querySelector(".credits-project");
-    const creditsVersion = document.querySelector(".credits-version");
-
-    setText(creditsBy, ui.creditsBy);
-    setText(creditsProject, ui.creditsProject);
-    setText(creditsVersion, ui.creditsVersion);
     setText(dom.settingsLanguageLabel, ui.language);
     setText(dom.settingsBackButton, ui.back);
 
@@ -474,16 +437,6 @@ function updateUI() {
     if (dom.settingsEffects) {
         dom.settingsEffects.parentElement?.querySelector(".setting-label") &&
             (dom.settingsEffects.parentElement.querySelector(".setting-label").textContent = ui.effects);
-    }
-
-    if (dom.settingsWeather) {
-        dom.settingsWeather.parentElement?.querySelector(".setting-label") &&
-            (dom.settingsWeather.parentElement.querySelector(".setting-label").textContent = ui.weather);
-    }
-
-    if (dom.settingsCrt) {
-        dom.settingsCrt.parentElement?.querySelector(".setting-label") &&
-            (dom.settingsCrt.parentElement.querySelector(".setting-label").textContent = ui.crt);
     }
 
     if (dom.settingsTextSpeed) {
@@ -527,19 +480,9 @@ function updateSettingsUI() {
 
     if (dom.settingsFps) dom.settingsFps.checked = settings.showFPS;
     if (dom.settingsEffects) dom.settingsEffects.checked = settings.effects;
-    if (dom.settingsWeather) dom.settingsWeather.checked = settings.weather;
-    if (dom.settingsCrt) dom.settingsCrt.checked = settings.crt;
-
-    document.documentElement.classList.toggle(
-        "crt-disabled",
-        !settings.crt
-    );
 
     if (dom.settingsQuality) dom.settingsQuality.value = settings.quality;
     if (dom.settingsTextSpeed) dom.settingsTextSpeed.value = String(settings.textSpeed);
-    if (dom.settingsTextSpeedValue) {
-        dom.settingsTextSpeedValue.textContent = String(settings.textSpeed);
-    }
     if (dom.settingsVolume) dom.settingsVolume.value = String(settings.masterVolume);
     if (dom.settingsMusicVolume) dom.settingsMusicVolume.value = String(settings.musicVolume);
     if (dom.settingsSfxVolume) dom.settingsSfxVolume.value = String(settings.sfxVolume);
@@ -777,7 +720,6 @@ async function transitionToSubmenuMusic() {
     createMenu2Audio();
 
     if (!menu2Available) {
-        await stopMenuMusic();
         return;
     }
 
@@ -942,6 +884,7 @@ function parseStory(text) {
         .split("\n");
 
     const lines = [];
+    const labels = {};
 
     let background = null;
     let weather = null;
@@ -955,70 +898,69 @@ function parseStory(text) {
     let currentCharacter = null;
     let currentSprite = "001";
 
-    let characterStates = {
-        Alice: "001",
-        Z: "001"
-    };
+    let characterStates = { Alice: "001", Z: "001" };
+    let visibleCharacters = { Alice: true, Z: false };
 
-    let visibleCharacters = {
-        Alice: true,
-        Z: false
-    };
+    let activeChoice = null;
+    let activeOption = null;
 
-    const clone = value =>
-        JSON.parse(JSON.stringify(value));
+    const clone = value => JSON.parse(JSON.stringify(value));
 
     function flushLanguage() {
         if (!currentDialogue || !language) {
             languageBuffer = [];
             return;
         }
-
         const value = languageBuffer.join("\n").trim();
-
-        if (value) {
-            currentDialogue.texts[language] = value;
-        }
-
+        if (value) currentDialogue.texts[language] = value;
         languageBuffer = [];
     }
 
     function flushDialogue() {
         flushLanguage();
         language = null;
-
         if (!currentDialogue) return;
-
-        if (Object.keys(currentDialogue.texts).length > 0) {
-            lines.push(currentDialogue);
-        }
-
+        if (Object.keys(currentDialogue.texts).length > 0) lines.push(currentDialogue);
         currentDialogue = null;
+    }
+
+    function flushOptionLanguage() {
+        if (!activeOption || !language) {
+            languageBuffer = [];
+            return;
+        }
+        const value = languageBuffer.join("\n").trim();
+        if (value) activeOption.texts[language] = value;
+        languageBuffer = [];
+    }
+
+    function finishOption() {
+        flushOptionLanguage();
+        language = null;
+        if (!activeChoice || !activeOption) return;
+        if (Object.keys(activeOption.texts).length > 0) {
+            activeChoice.options.push(activeOption);
+        }
+        activeOption = null;
+    }
+
+    function finishChoice() {
+        finishOption();
+        if (!activeChoice) return;
+        if (activeChoice.options.length > 0) lines.push(activeChoice);
+        activeChoice = null;
     }
 
     function beginDialogue(character, sprite) {
         flushDialogue();
-
         currentCharacter = character;
-        currentSprite =
-            sprite ||
-            characterStates[character] ||
-            "001";
-
-        if (characterStates[character]) {
-            characterStates[character] = currentSprite;
-        }
-
-        if (
-            Object.prototype.hasOwnProperty.call(
-                visibleCharacters,
-                character
-            )
-        ) {
+        currentSprite = sprite || characterStates[character] || "001";
+        if (characterStates[character]) characterStates[character] = currentSprite;
+        if (Object.prototype.hasOwnProperty.call(visibleCharacters, character)) {
             visibleCharacters[character] = true;
         }
-
         currentDialogue = {
+            type: "dialogue",
             character,
             sprite: currentSprite,
             texts: {},
@@ -1031,124 +973,152 @@ function parseStory(text) {
         };
     }
 
+    function beginChoice() {
+        flushDialogue();
+        finishChoice();
+        activeChoice = {
+            type: "choice",
+            id: `choice_${lines.length}`,
+            options: [],
+            background,
+            weather,
+            music,
+            chapter,
+            characterStates: clone(characterStates),
+            visibleCharacters: clone(visibleCharacters)
+        };
+    }
+
     for (let i = 0; i < rawLines.length; i++) {
         const raw = rawLines[i];
         const line = raw.trim();
-
         if (!line) continue;
 
-        if (line.startsWith("#")) {
-            const chapterMatch =
-                line.match(/^#\s*Chapter:\s*(.+)$/i);
+        if (activeOption) {
+            const nextOption = line.match(/^@option\s+(.+)$/i);
 
-            if (chapterMatch) {
-                chapter = chapterMatch[1].trim();
+            if (nextOption) {
+                finishOption();
+                activeOption = {
+                    target: nextOption[1].trim(),
+                    texts: {}
+                };
+                language = null;
+                languageBuffer = [];
+                continue;
             }
 
+            if (/^@endoption$/i.test(line)) {
+                finishOption();
+                continue;
+            }
+
+            if (/^@endchoice$/i.test(line)) {
+                finishOption();
+                finishChoice();
+                continue;
+            }
+
+            const languageStart = line.match(/^\[([^\]/]+)\]$/);
+            if (languageStart) {
+                flushOptionLanguage();
+                language = languageStart[1].trim();
+                languageBuffer = [];
+                continue;
+            }
+            if (/^\[\/[^\]]+\]$/.test(line)) {
+                flushOptionLanguage();
+                language = null;
+                continue;
+            }
+            if (language) languageBuffer.push(raw.trim());
+            continue;
+        }
+
+        if (activeChoice) {
+            const optionMatch = line.match(/^@option\s+(.+)$/i);
+            if (optionMatch) {
+                finishOption();
+                activeOption = { target: optionMatch[1].trim(), texts: {} };
+                language = null;
+                languageBuffer = [];
+                continue;
+            }
+            if (/^@endchoice$/i.test(line)) {
+                finishChoice();
+                continue;
+            }
+            continue;
+        }
+
+        if (/^@choice$/i.test(line)) {
+            beginChoice();
+            continue;
+        }
+
+        const labelMatch = line.match(/^@label\s+(.+)$/i);
+        if (labelMatch) {
+            flushDialogue();
+            finishChoice();
+            const label = labelMatch[1].trim();
+            if (label) labels[label] = lines.length;
+            continue;
+        }
+
+        if (line.startsWith("#")) {
+            const chapterMatch = line.match(/^#\s*Chapter:\s*(.+)$/i);
+            if (chapterMatch) chapter = chapterMatch[1].trim();
             continue;
         }
 
         if (line.startsWith("@background")) {
             flushDialogue();
-            background =
-                line.replace(/^@background/i, "").trim() ||
-                null;
+            background = line.replace(/^@background/i, "").trim() || null;
             continue;
         }
 
         if (line.startsWith("@weather")) {
             flushDialogue();
-            weather =
-                line.replace(/^@weather/i, "").trim() ||
-                null;
+            weather = line.replace(/^@weather/i, "").trim() || null;
             continue;
         }
 
-        /*
-         * @music is deliberately parsed here as story state.
-         *
-         * Example:
-         * @music abandoned_hall
-         *
-         * The next dialogue line uses that music.
-         */
         if (line.startsWith("@music")) {
             flushDialogue();
-
-            music =
-                line.replace(/^@music/i, "").trim() ||
-                null;
-
+            music = line.replace(/^@music/i, "").trim() || null;
             continue;
         }
 
-        const characterMatch =
-            line.match(/^(.+?)\s+@sprite\s+(.+)$/i);
-
+        const characterMatch = line.match(/^(.+?)\s+@sprite\s+(.+)$/i);
         if (characterMatch) {
-            const character =
-                characterMatch[1].trim();
-
-            const sprite =
-                characterMatch[2].trim() || "001";
-
+            const character = characterMatch[1].trim();
+            const sprite = characterMatch[2].trim() || "001";
             flushDialogue();
-
             currentCharacter = character;
             currentSprite = sprite;
-
-            if (
-                Object.prototype.hasOwnProperty.call(
-                    characterStates,
-                    character
-                )
-            ) {
+            if (Object.prototype.hasOwnProperty.call(characterStates, character)) {
                 characterStates[character] = sprite;
-
-                if (character === "Z") {
-                    visibleCharacters.Z = true;
-                }
-
-                if (character === "Alice") {
-                    visibleCharacters.Alice = true;
-                }
+                if (character === "Z") visibleCharacters.Z = true;
+                if (character === "Alice") visibleCharacters.Alice = true;
             }
-
             continue;
         }
 
-        const inlineDialogue =
-            line.match(/^([^:]+):\s*"([\s\S]*)"$/);
-
+        const inlineDialogue = line.match(/^([^:]+):\s*"([\s\S]*)"$/);
         if (inlineDialogue) {
-            beginDialogue(
-                inlineDialogue[1].trim(),
-                currentSprite || "001"
-            );
-
-            currentDialogue.texts.en =
-                inlineDialogue[2].trim();
-
+            beginDialogue(inlineDialogue[1].trim(), currentSprite || "001");
+            currentDialogue.texts.en = inlineDialogue[2].trim();
             flushDialogue();
             continue;
         }
 
-        const languageStart =
-            line.match(/^\[([^\]/]+)\]$/);
-
+        const languageStart = line.match(/^\[([^\]/]+)\]$/);
         if (languageStart) {
             if (!currentDialogue) {
-                beginDialogue(
-                    currentCharacter || "SYSTEM",
-                    currentSprite || "001"
-                );
+                beginDialogue(currentCharacter || "SYSTEM", currentSprite || "001");
             }
-
             flushLanguage();
-
-            language =
-                languageStart[1].trim();
-
+            language = languageStart[1].trim();
             languageBuffer = [];
             continue;
         }
@@ -1159,13 +1129,12 @@ function parseStory(text) {
             continue;
         }
 
-        if (language) {
-            languageBuffer.push(raw.trim());
-        }
+        if (language) languageBuffer.push(raw.trim());
     }
 
+    finishChoice();
     flushDialogue();
-
+    lines.labels = labels;
     return lines;
 }
 
@@ -1231,7 +1200,6 @@ function updateWeather(name) {
 
     if (
         normalized === "snow" &&
-        settings.weather &&
         settings.effects &&
         settings.quality !== "low"
     ) {
@@ -1477,6 +1445,126 @@ function startTypewriter(text) {
 }
 
 /* =========================================================
+   CHOICES
+========================================================= */
+
+function getChoiceText(option) {
+    if (!option || !option.texts) return "";
+    return option.texts[currentLanguage] || option.texts.en || Object.values(option.texts)[0] || "";
+}
+
+function ensureChoiceContainer() {
+    if (dom.choiceContainer) return dom.choiceContainer;
+    if (!dom.storyScreen) return null;
+
+    const container = document.createElement("div");
+    container.id = "choice-container";
+    container.className = "kd-choice-container";
+    container.setAttribute("aria-live", "polite");
+    dom.storyScreen.appendChild(container);
+    dom.choiceContainer = container;
+    return container;
+}
+
+function hideChoices() {
+    const container = ensureChoiceContainer();
+    if (!container) return;
+    container.classList.remove("active");
+    container.textContent = "";
+    if (dom.nextButton) {
+        dom.nextButton.disabled = false;
+        dom.nextButton.style.display = "";
+    }
+}
+
+function showChoices(line) {
+    const container = ensureChoiceContainer();
+    if (!container || !line || line.type !== "choice") return;
+
+    container.textContent = "";
+    container.classList.add("active");
+    if (dom.nextButton) dom.nextButton.style.display = "none";
+
+    const title = document.createElement("div");
+    title.className = "kd-choice-title";
+    title.textContent = currentLanguage === "pt-BR" ? "ESCOLHA" : currentLanguage === "es-419" ? "ELECCIÓN" : "CHOICE";
+    container.appendChild(title);
+
+    line.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "kd-choice-button";
+        button.dataset.choiceIndex = String(index);
+        button.textContent = getChoiceText(option);
+        button.addEventListener("click", async () => {
+            if (isTyping || vnMenuOpen) return;
+            playButtonSound();
+            await selectChoice(line, option, index);
+        });
+        container.appendChild(button);
+    });
+}
+
+function resolveChoiceTarget(target) {
+    const raw = String(target || "").trim();
+    if (!raw) return -1;
+
+    const labels = storyLines.labels || {};
+    if (Object.prototype.hasOwnProperty.call(labels, raw)) return Number(labels[raw]);
+
+    const normalized = raw.toLowerCase();
+    const matchingLabel = Object.keys(labels).find(key => key.toLowerCase() === normalized);
+    if (matchingLabel) return Number(labels[matchingLabel]);
+
+    if (/^line:\d+$/i.test(raw)) return Number(raw.split(":")[1]);
+    if (/^\d+$/.test(raw)) return Number(raw);
+    return -1;
+}
+
+async function selectChoice(line, option, index) {
+    if (!line || !option) return;
+
+    const targetIndex = resolveChoiceTarget(option.target);
+    if (!Number.isInteger(targetIndex) || targetIndex < 0 || targetIndex >= storyLines.length) {
+        console.error("[Killer Drones] Invalid choice target:", option.target);
+        hideChoices();
+        if (dom.speaker) dom.speaker.textContent = getUI().endSpeaker;
+        if (dom.dialogueText) {
+            dom.dialogueText.textContent = currentLanguage === "pt-BR"
+                ? "ERRO: destino da escolha não encontrado."
+                : currentLanguage === "es-419"
+                    ? "ERROR: no se encontró el destino de la elección."
+                    : "ERROR: choice destination not found.";
+        }
+        return;
+    }
+
+    choiceHistory[line.id] = {
+        option: index,
+        target: option.target,
+        line: targetIndex,
+        timestamp: Date.now()
+    };
+
+    currentLine = targetIndex;
+    chapterFinished = false;
+    hideChoices();
+
+    await renderCurrentLine({ updateMusic: true });
+    autoCheckpoint();
+}
+
+async function renderChoiceLine(line) {
+    stopTypewriter();
+    hideChoices();
+    if (dom.speaker) {
+        dom.speaker.textContent = currentLanguage === "pt-BR" ? "ESCOLHA" : currentLanguage === "es-419" ? "ELECCIÓN" : "CHOICE";
+    }
+    if (dom.dialogueText) dom.dialogueText.textContent = "";
+    showChoices(line);
+}
+
+/* =========================================================
    DIALOGUE
 ========================================================= */
 
@@ -1496,6 +1584,22 @@ async function renderCurrentLine(
         storyLines[currentLine];
 
     chapterFinished = false;
+
+    if (line.type === "choice") {
+        currentChapter = line.chapter || currentChapter || "Prologue";
+
+        updateBackground(line.background);
+        updateWeather(line.weather);
+        rebuildCharacterStage(line);
+
+        if (updateMusic && line.music) {
+            await playStoryMusic(line.music);
+        }
+
+        await renderChoiceLine(line);
+        return;
+    }
+
     currentChapter =
         line.chapter || "Prologue";
 
@@ -1537,6 +1641,7 @@ async function startStory(lineIndex = 0) {
 
     storyStarted = true;
     chapterFinished = false;
+    choiceHistory = {};
 
     currentLine =
         clamp(
@@ -1564,6 +1669,10 @@ async function nextLine() {
 
     if (isTyping) {
         finishTypewriter();
+        return;
+    }
+
+    if (storyLines[currentLine]?.type === "choice") {
         return;
     }
 
@@ -1710,6 +1819,7 @@ function createSaveData() {
         background: currentBackground,
         weather: currentWeather,
         music: currentMusicName,
+        choices: JSON.parse(JSON.stringify(choiceHistory)),
         timestamp: Date.now()
     };
 }
@@ -1761,6 +1871,10 @@ async function loadGame(slot) {
     if (!data) return false;
 
     activeSaveSlot = slot;
+    choiceHistory =
+        data.choices && typeof data.choices === "object"
+            ? JSON.parse(JSON.stringify(data.choices))
+            : {};
 
     if (
         data.language &&
@@ -2103,70 +2217,6 @@ async function continueGame() {
 }
 
 /* =========================================================
-   CREDITS
-========================================================= */
-
-function buildCreditsGrid() {
-    if (!dom.creditsGrid) return;
-
-    const width = Math.max(window.innerWidth, 320);
-    const height = Math.max(window.innerHeight, 480);
-
-    const tileSize =
-        width <= 700 ? 92 :
-        width <= 1100 ? 110 :
-        128;
-
-    const columns = Math.ceil(width / tileSize) + 4;
-    const rows = Math.ceil(height / tileSize) + 4;
-
-    dom.creditsGrid.textContent = "";
-    dom.creditsGrid.style.gridTemplateColumns =
-        `repeat(${columns}, minmax(0, 1fr))`;
-
-    const fragment = document.createDocumentFragment();
-
-    for (let row = 0; row < rows; row++) {
-        for (let column = 0; column < columns; column++) {
-            const image = document.createElement("img");
-
-            image.className = "credits-grid-tile";
-            image.src = "assets/images/grid/grid-evil.png";
-            image.alt = "";
-            image.draggable = false;
-
-            /*
-             * Each tile moves as part of the same diagonal field.
-             * The animation is intentionally subtle so the credits
-             * remain readable on both desktop and mobile.
-             */
-            image.style.animationDelay =
-                `${-(row * 0.08 + column * 0.045)}s`;
-
-            fragment.appendChild(image);
-        }
-    }
-
-    dom.creditsGrid.appendChild(fragment);
-}
-
-async function openCredits() {
-    playButtonSound();
-
-    showScreen(dom.creditsScreen);
-    buildCreditsGrid();
-
-    await transitionToSubmenuMusic();
-}
-
-async function closeCredits() {
-    playButtonSound();
-
-    showScreen(dom.titleScreen);
-    await transitionToMainMenuMusic();
-}
-
-/* =========================================================
    SETTINGS
 ========================================================= */
 
@@ -2208,38 +2258,6 @@ function setupSettingsControls() {
                         storyLines[currentLine]
                     );
                 }
-            }
-        );
-    }
-
-    if (dom.settingsWeather) {
-        dom.settingsWeather.addEventListener(
-            "change",
-            () => {
-                settings.weather = dom.settingsWeather.checked;
-
-                saveSettings();
-                updateSettingsUI();
-
-                if (storyLines[currentLine]) {
-                    updateWeather(null);
-
-                    if (settings.weather) {
-                        updateWeather(storyLines[currentLine].weather);
-                    }
-                }
-            }
-        );
-    }
-
-    if (dom.settingsCrt) {
-        dom.settingsCrt.addEventListener(
-            "change",
-            () => {
-                settings.crt = dom.settingsCrt.checked;
-
-                saveSettings();
-                updateSettingsUI();
             }
         );
     }
@@ -2494,24 +2512,10 @@ function setupEvents() {
         );
     }
 
-    if (dom.creditsButton) {
-        dom.creditsButton.addEventListener(
-            "click",
-            openCredits
-        );
-    }
-
     if (dom.settingsBackButton) {
         dom.settingsBackButton.addEventListener(
             "click",
             closeSettings
-        );
-    }
-
-    if (dom.creditsBackButton) {
-        dom.creditsBackButton.addEventListener(
-            "click",
-            closeCredits
         );
     }
 
@@ -2694,15 +2698,6 @@ function setupEvents() {
     );
 }
 
-window.addEventListener("resize", () => {
-    if (
-        dom.creditsScreen &&
-        dom.creditsScreen.classList.contains("active")
-    ) {
-        buildCreditsGrid();
-    }
-});
-
 /* =========================================================
    VIGNETTE FALLBACK
 ========================================================= */
@@ -2744,6 +2739,7 @@ window.killerDronesDebug = function () {
         storyStarted,
         chapterFinished,
         activeSaveSlot,
+        choiceHistory: JSON.parse(JSON.stringify(choiceHistory)),
         vnMenuOpen,
         menu2Available,
         settings: { ...settings },
