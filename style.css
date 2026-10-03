@@ -1,0 +1,1990 @@
+/* =========================================================
+   KILLER DRONES: AN MD AU STORY
+   STYLE SHEET
+   VERSION 0.3.0
+========================================================= */
+
+
+/* =========================================================
+   FONT
+========================================================= */
+
+@font-face {
+    font-family: "VCR OSD Mono";
+    src: url("assets/fonts/vcr.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    overflow: hidden;
+    background: #000;
+    color: #fff;
+    font-family:
+        "VCR OSD Mono",
+        "Courier New",
+        monospace;
+}
+
+
+/* =========================================================
+   GAME ROOT
+========================================================= */
+
+#game {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #000;
+}
+
+
+/* =========================================================
+   CRT OVERLAY
+========================================================= */
+
+#game::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    pointer-events: none;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.035) 0px,
+            rgba(255,255,255,0.035) 1px,
+            rgba(0,0,0,0.07) 1px,
+            rgba(0,0,0,0.07) 3px
+        );
+
+    opacity: 0.75;
+}
+
+#game::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            to bottom,
+            transparent 0%,
+            transparent 42%,
+            rgba(255,255,255,0.025) 46%,
+            rgba(255,255,255,0.09) 50%,
+            rgba(255,255,255,0.025) 54%,
+            transparent 58%,
+            transparent 100%
+        );
+
+    background-size: 100% 180px;
+    background-repeat: repeat-y;
+
+    animation: crtScanDown 4s linear infinite;
+    opacity: 0.45;
+}
+
+@keyframes crtScanDown {
+    from {
+        background-position: 0 -180px;
+    }
+
+    to {
+        background-position: 0 100vh;
+    }
+}
+
+
+/* =========================================================
+   EFFECT MODES
+========================================================= */
+
+/*
+ * The JavaScript changes:
+ *
+ * html[data-effects="off"]
+ * html[data-quality="low"]
+ * html[data-quality="medium"]
+ * html[data-quality="high"]
+ */
+
+html[data-effects="off"] #vignette {
+    display: none !important;
+}
+
+html[data-effects="off"] #game::before {
+    opacity: 0.25;
+}
+
+html[data-effects="off"] #game::after {
+    display: none;
+}
+
+html[data-quality="low"] #game::after {
+    display: none;
+}
+
+html[data-quality="low"] .snowflake {
+    animation-duration: 7s !important;
+}
+
+html[data-quality="medium"] .snowflake {
+    animation-duration: 5s !important;
+}
+
+
+/* =========================================================
+   VIGNETTE
+========================================================= */
+
+#vignette {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    z-index: 10;
+
+    pointer-events: none;
+    user-select: none;
+}
+
+
+/* =========================================================
+   FPS COUNTER
+========================================================= */
+
+#fps-counter {
+    position: fixed;
+
+    top: 10px;
+    left: 10px;
+
+    z-index: 10000;
+
+    padding: 5px 9px;
+
+    border: 1px solid rgba(255,255,255,0.3);
+
+    background:
+        rgba(0,0,0,0.75);
+
+    color: #fff;
+
+    font-family:
+        "VCR OSD Mono",
+        monospace;
+
+    font-size: 11px;
+
+    letter-spacing: 1px;
+
+    pointer-events: none;
+
+    user-select: none;
+
+    text-shadow:
+        0 0 6px rgba(255,255,255,0.5);
+}
+
+
+/* =========================================================
+   SCREENS
+========================================================= */
+
+.screen {
+    position: absolute;
+    inset: 0;
+
+    display: none;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+}
+
+.screen.active {
+    display: block;
+}
+
+
+/* =========================================================
+   LOADING SCREEN
+========================================================= */
+
+#loading-screen {
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #000;
+}
+
+#loading-screen.active {
+    display: flex;
+}
+
+.loading-content {
+    position: relative;
+
+    width: 100%;
+    height: 100%;
+}
+
+.loading-status {
+    position: absolute;
+
+    left: 8%;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: min(360px, 35vw);
+}
+
+.loading-step {
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    margin: 12px 0;
+
+    color: #444;
+
+    font-size: 13px;
+
+    letter-spacing: 2px;
+
+    transition:
+        color 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.loading-step.active {
+    color: #fff;
+}
+
+.loading-step.done {
+    color: #777;
+}
+
+.step-number {
+    min-width: 28px;
+
+    color: #555;
+
+    font-size: 12px;
+}
+
+.loading-step.active .step-number {
+    color: #fff;
+}
+
+.loading-step.done .step-number {
+    color: #777;
+}
+
+.loading-center {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    width: min(650px, 60vw);
+
+    text-align: center;
+}
+
+.loading-bar {
+    width: 100%;
+    height: 8px;
+
+    border: 1px solid #555;
+
+    background: #080808;
+
+    overflow: hidden;
+}
+
+.loading-progress {
+    width: 0%;
+    height: 100%;
+
+    background: #fff;
+
+    transition:
+        width 0.12s linear;
+}
+
+.loading-percent {
+    margin-top: 14px;
+
+    color: #aaa;
+
+    font-size: 14px;
+
+    letter-spacing: 3px;
+}
+
+
+/* =========================================================
+   TITLE SCREEN
+========================================================= */
+
+#title-screen {
+    align-items: center;
+    justify-content: center;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #242424 0%,
+            #101010 45%,
+            #000 100%
+        );
+}
+
+#title-screen.active {
+    display: flex;
+}
+
+.title-content {
+    position: relative;
+
+    z-index: 2;
+
+    width: 90%;
+    max-width: 1000px;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+.game-title {
+    position: relative;
+
+    display: inline-block;
+
+    font-size:
+        clamp(
+            42px,
+            8vw,
+            100px
+        );
+
+    letter-spacing: 6px;
+
+    color: #fff;
+
+    text-shadow:
+        3px 0 #ff1744,
+        -3px 0 #00e5ff;
+
+    animation:
+        titleFlicker 4s infinite;
+
+    user-select: none;
+}
+
+.game-title::before,
+.game-title::after {
+    content: "KILLER DRONES";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+
+    pointer-events: none;
+}
+
+.game-title::before {
+    color: #ff1744;
+
+    clip-path:
+        inset(
+            0 0 55% 0
+        );
+
+    transform:
+        translateX(-3px);
+
+    animation:
+        glitchRed 3s infinite;
+}
+
+.game-title::after {
+    color: #00e5ff;
+
+    clip-path:
+        inset(
+            55% 0 0 0
+        );
+
+    transform:
+        translateX(3px);
+
+    animation:
+        glitchBlue 2.5s infinite;
+}
+
+.game-subtitle {
+    margin-top: 18px;
+
+    color: #aaa;
+
+    font-size: 18px;
+
+    letter-spacing: 6px;
+}
+
+
+/* =========================================================
+   TITLE MENU
+========================================================= */
+
+.title-menu {
+    display: flex;
+
+    flex-direction: column;
+    align-items: center;
+
+    gap: 14px;
+
+    margin-top: 70px;
+}
+
+.menu-button {
+    position: relative;
+
+    width: 300px;
+
+    padding: 14px 20px;
+
+    border: 1px solid transparent;
+
+    background: transparent;
+
+    color: #fff;
+
+    font-family: inherit;
+
+    font-size: 21px;
+
+    letter-spacing: 3px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        color 0.15s ease,
+        transform 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.menu-button:hover {
+    background: #fff;
+
+    color: #000;
+
+    transform:
+        translateX(6px);
+}
+
+.menu-button:active {
+    transform:
+        translateX(3px)
+        scale(0.98);
+}
+
+.menu-button:disabled {
+    color: #333;
+
+    cursor: not-allowed;
+
+    opacity: 0.45;
+}
+
+.menu-button:disabled:hover {
+    background: transparent;
+
+    color: #333;
+
+    transform: none;
+}
+
+
+/* =========================================================
+   CREDITS / VERSION
+========================================================= */
+
+.credits {
+    margin-top: 65px;
+
+    color: #444;
+
+    font-size: 11px;
+
+    letter-spacing: 2px;
+}
+
+.version {
+    position: absolute;
+
+    left: 50%;
+    bottom: 25px;
+
+    transform:
+        translateX(-50%);
+
+    color: #555;
+
+    font-size: 12px;
+
+    letter-spacing: 2px;
+}
+
+
+/* =========================================================
+   SETTINGS / SAVE SCREENS
+========================================================= */
+
+#settings-screen,
+#save-screen {
+    align-items: center;
+    justify-content: center;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #242424 0%,
+            #101010 45%,
+            #000 100%
+        );
+}
+
+#settings-screen.active,
+#save-screen.active {
+    display: flex;
+}
+
+.settings-content,
+.save-content {
+    position: relative;
+
+    z-index: 2;
+
+    width: 90%;
+    max-width: 760px;
+
+    max-height: 92vh;
+
+    overflow-y: auto;
+
+    padding: 30px;
+
+    text-align: center;
+
+    scrollbar-width: thin;
+    scrollbar-color: #555 #080808;
+}
+
+.settings-content::-webkit-scrollbar,
+.save-content::-webkit-scrollbar {
+    width: 7px;
+}
+
+.settings-content::-webkit-scrollbar-track,
+.save-content::-webkit-scrollbar-track {
+    background: #080808;
+}
+
+.settings-content::-webkit-scrollbar-thumb,
+.save-content::-webkit-scrollbar-thumb {
+    background: #555;
+}
+
+
+/* =========================================================
+   SETTINGS TITLE
+========================================================= */
+
+.settings-title,
+.save-title,
+#save-screen-title {
+    margin-bottom: 40px;
+
+    color: #fff;
+
+    font-size:
+        clamp(
+            36px,
+            6vw,
+            64px
+        );
+
+    letter-spacing: 5px;
+
+    text-shadow:
+        3px 0 #ff1744,
+        -3px 0 #00e5ff;
+}
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+.settings-section {
+    margin-bottom: 30px;
+
+    padding: 20px;
+
+    border:
+        1px solid rgba(255,255,255,0.12);
+
+    background:
+        rgba(0,0,0,0.4);
+}
+
+.settings-label,
+.settings-section > label {
+    display: block;
+
+    margin-bottom: 16px;
+
+    color: #aaa;
+
+    font-size: 15px;
+
+    letter-spacing: 3px;
+}
+
+.language-options {
+    display: flex;
+
+    flex-direction: column;
+    align-items: center;
+
+    gap: 10px;
+}
+
+.language-button {
+    width: min(
+        100%,
+        450px
+    );
+
+    padding: 14px 20px;
+
+    border:
+        1px solid #444;
+
+    background:
+        rgba(0,0,0,0.5);
+
+    color: #aaa;
+
+    font-family: inherit;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.language-button:hover,
+.language-button.selected {
+    background: #fff;
+
+    color: #000;
+
+    border-color: #fff;
+}
+
+
+/* =========================================================
+   DYNAMIC SETTINGS CREATED BY JS
+========================================================= */
+
+.kd-settings-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(
+                0,
+                1fr
+            )
+        );
+
+    gap: 12px;
+
+    margin-bottom: 30px;
+}
+
+.kd-setting-row {
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    min-height: 75px;
+
+    padding: 15px;
+
+    border:
+        1px solid #333;
+
+    background:
+        rgba(0,0,0,0.55);
+
+    text-align: left;
+}
+
+.kd-setting-row:hover {
+    border-color: #666;
+}
+
+.kd-setting-row .setting-label {
+    margin-bottom: 9px;
+
+    color: #aaa;
+
+    font-size: 11px;
+
+    letter-spacing: 2px;
+}
+
+.kd-setting-row input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+
+    accent-color: #fff;
+
+    cursor: pointer;
+}
+
+.kd-setting-row input[type="range"] {
+    width: 100%;
+
+    accent-color: #fff;
+
+    cursor: pointer;
+}
+
+.kd-setting-row select {
+    width: 100%;
+
+    padding: 8px;
+
+    border:
+        1px solid #444;
+
+    background: #050505;
+
+    color: #fff;
+
+    font-family: inherit;
+
+    cursor: pointer;
+}
+
+.kd-setting-value {
+    margin-top: 7px;
+
+    color: #777;
+
+    font-size: 10px;
+
+    letter-spacing: 1px;
+}
+
+.kd-settings-reset {
+    width: 100%;
+
+    padding: 12px;
+
+    border:
+        1px solid #444;
+
+    background: transparent;
+
+    color: #777;
+
+    font-family: inherit;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.kd-settings-reset:hover {
+    border-color: #fff;
+
+    background: #fff;
+
+    color: #000;
+}
+
+
+/* =========================================================
+   SAVE SCREEN
+========================================================= */
+
+.save-slots {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(
+                0,
+                1fr
+            )
+        );
+
+    gap: 12px;
+
+    max-height: 55vh;
+
+    overflow-y: auto;
+
+    padding: 4px;
+
+    scrollbar-width: thin;
+    scrollbar-color: #555 #080808;
+}
+
+.save-slots::-webkit-scrollbar {
+    width: 7px;
+}
+
+.save-slots::-webkit-scrollbar-track {
+    background: #080808;
+}
+
+.save-slots::-webkit-scrollbar-thumb {
+    background: #555;
+}
+
+
+/* =========================================================
+   SAVE SLOT WRAPPER
+========================================================= */
+
+.save-slot-wrapper {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        82px;
+
+    gap: 5px;
+
+    min-width: 0;
+}
+
+
+/* =========================================================
+   SAVE SLOT
+========================================================= */
+
+.save-slot {
+    min-height: 110px;
+
+    padding: 15px;
+
+    border:
+        1px solid #444;
+
+    background:
+        rgba(0,0,0,0.65);
+
+    color: #fff;
+
+    font-family: inherit;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.15s ease,
+        background 0.15s ease,
+        transform 0.15s ease;
+}
+
+.save-slot:hover {
+    border-color: #fff;
+
+    background:
+        rgba(255,255,255,0.08);
+
+    transform:
+        translateX(4px);
+}
+
+.save-slot:active {
+    transform:
+        translateX(2px)
+        scale(0.99);
+}
+
+.save-slot-number {
+    color: #777;
+
+    font-size: 11px;
+
+    letter-spacing: 2px;
+}
+
+.save-slot-info {
+    margin-top: 8px;
+
+    color: #777;
+
+    font-size: 10px;
+
+    line-height: 1.5;
+}
+
+.save-delete-button {
+    min-width: 0;
+
+    border:
+        1px solid #3a3a3a;
+
+    background:
+        rgba(0,0,0,0.75);
+
+    color: #666;
+
+    font-family: inherit;
+
+    font-size: 10px;
+
+    letter-spacing: 1px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.save-delete-button:hover {
+    border-color: #ff1744;
+
+    background:
+        rgba(255,23,68,0.12);
+
+    color: #ff1744;
+}
+
+.delete-all-saves-button {
+    width: min(
+        100%,
+        500px
+    );
+
+    margin-top: 18px;
+
+    padding: 11px;
+
+    border:
+        1px solid #3a3a3a;
+
+    background: transparent;
+
+    color: #666;
+
+    font-family: inherit;
+
+    font-size: 11px;
+
+    letter-spacing: 2px;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.15s ease,
+        color 0.15s ease,
+        background 0.15s ease;
+}
+
+.delete-all-saves-button:hover {
+    border-color: #ff1744;
+
+    color: #ff1744;
+
+    background:
+        rgba(255,23,68,0.08);
+}
+
+
+/* =========================================================
+   STORY
+========================================================= */
+
+#story-screen {
+    isolation: isolate;
+
+    background: #111;
+}
+
+#background {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 0;
+
+    background-image:
+        linear-gradient(
+            rgba(0,0,0,0.15),
+            rgba(0,0,0,0.55)
+        ),
+        url(
+            "assets/backgrounds/abandonedHall.jpg"
+        );
+
+    background-size: cover;
+
+    background-position: center;
+
+    background-repeat: no-repeat;
+
+    transform:
+        scale(1.01);
+
+    transition:
+        background-image 0.25s ease;
+}
+
+
+/* =========================================================
+   WEATHER
+========================================================= */
+
+#weather {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 20;
+
+    overflow: hidden;
+
+    pointer-events: none;
+}
+
+.snowflake {
+    position: absolute;
+
+    top: -30px;
+
+    width: 4px;
+    height: 4px;
+
+    border-radius: 50%;
+
+    background: #fff;
+
+    animation:
+        snowFall
+        linear
+        infinite;
+
+    box-shadow:
+        0 0 4px
+        rgba(255,255,255,0.5);
+}
+
+@keyframes snowFall {
+    from {
+        transform:
+            translate3d(
+                0,
+                -40px,
+                0
+            );
+    }
+
+    to {
+        transform:
+            translate3d(
+                var(--wind),
+                110vh,
+                0
+            );
+    }
+}
+
+
+/* =========================================================
+   CHARACTERS
+========================================================= */
+
+#characters {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 30;
+
+    pointer-events: none;
+
+    overflow: hidden;
+}
+
+.character {
+    position: absolute;
+
+    bottom: 150px;
+
+    max-width: 500px;
+    max-height: 72vh;
+
+    width: auto;
+    height: auto;
+
+    object-fit: contain;
+
+    user-select: none;
+
+    pointer-events: none;
+
+    display: block;
+
+    transition:
+        opacity 0.3s ease,
+        left 0.7s cubic-bezier(
+            0.22,
+            1,
+            0.36,
+            1
+        );
+}
+
+
+/* =========================================================
+   ALICE
+========================================================= */
+
+#alice {
+    left: 50%;
+
+    transform:
+        translateX(-50%);
+}
+
+#alice.alice-right {
+    left: 76%;
+
+    transform:
+        translateX(-50%);
+}
+
+
+/* =========================================================
+   Z
+========================================================= */
+
+#z {
+    left: 17%;
+
+    opacity: 0;
+
+    bottom: 155px;
+
+    max-height:
+        min(
+            62vh,
+            560px
+        );
+
+    transform:
+        translateX(-50%);
+
+    transition:
+        left 0.7s cubic-bezier(
+            0.22,
+            1,
+            0.36,
+            1
+        ),
+        opacity 0.3s ease;
+}
+
+#z.z-visible {
+    left: 17%;
+
+    opacity: 1;
+}
+
+
+/* =========================================================
+   TALKING
+========================================================= */
+
+#alice.talking {
+    animation:
+        aliceTalk
+        0.28s
+        ease-out;
+}
+
+#z.talking {
+    animation:
+        zTalk
+        0.28s
+        ease-out;
+}
+
+
+/* =========================================================
+   ALICE COLD / SHIVER
+========================================================= */
+
+#alice.alice-cold {
+    animation:
+        aliceShiver
+        0.95s
+        ease-in-out
+        infinite;
+}
+
+@keyframes aliceShiver {
+    0%,
+    100% {
+        margin-left: 0;
+    }
+
+    20% {
+        margin-left: -2px;
+    }
+
+    40% {
+        margin-left: 2px;
+    }
+
+    60% {
+        margin-left: -1px;
+    }
+
+    80% {
+        margin-left: 1px;
+    }
+}
+
+@keyframes aliceTalk {
+    0% {
+        margin-bottom: 0;
+    }
+
+    50% {
+        margin-bottom: 7px;
+    }
+
+    100% {
+        margin-bottom: 0;
+    }
+}
+
+@keyframes zTalk {
+    0% {
+        margin-bottom: 0;
+    }
+
+    50% {
+        margin-bottom: 6px;
+    }
+
+    100% {
+        margin-bottom: 0;
+    }
+}
+
+
+/* =========================================================
+   DIALOGUE
+========================================================= */
+
+#dialogue-box {
+    position: absolute;
+
+    left: 5%;
+    right: 5%;
+    bottom: 25px;
+
+    min-height: 145px;
+
+    padding:
+        27px
+        25px
+        20px;
+
+    background:
+        rgba(0,0,0,0.9);
+
+    border:
+        2px solid #fff;
+
+    z-index: 100;
+
+    isolation: isolate;
+}
+
+#speaker {
+    position: absolute;
+
+    left: 25px;
+    top: -17px;
+
+    padding:
+        4px
+        14px;
+
+    background: #000;
+
+    border:
+        1px solid #fff;
+
+    font-size: 18px;
+
+    letter-spacing: 2px;
+}
+
+#dialogue-text {
+    min-height: 60px;
+
+    padding-right: 120px;
+
+    font-size: 20px;
+
+    line-height: 1.5;
+
+    white-space: pre-wrap;
+
+    overflow-wrap: break-word;
+}
+
+#next-button {
+    position: absolute;
+
+    right: 20px;
+    bottom: 20px;
+
+    padding:
+        8px
+        16px;
+
+    border:
+        1px solid #fff;
+
+    background: #000;
+
+    color: #fff;
+
+    font-family: inherit;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        color 0.15s ease,
+        transform 0.1s ease;
+}
+
+#next-button:hover {
+    background: #fff;
+
+    color: #000;
+}
+
+#next-button:active {
+    transform: scale(0.95);
+}
+
+
+/* =========================================================
+   VN MENU BUTTON
+========================================================= */
+
+.vn-menu-button {
+    position: absolute;
+
+    top: 20px;
+    right: 20px;
+
+    z-index: 200;
+
+    width: 45px;
+    height: 45px;
+
+    border:
+        1px solid #fff;
+
+    background:
+        rgba(0,0,0,0.8);
+
+    color: #fff;
+
+    font-family: inherit;
+
+    font-size: 22px;
+
+    cursor: pointer;
+
+    pointer-events: auto;
+
+    transition:
+        background 0.15s ease,
+        color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.vn-menu-button:hover {
+    background: #fff;
+
+    color: #000;
+
+    transform:
+        scale(1.05);
+}
+
+.vn-menu-button:active {
+    transform:
+        scale(0.95);
+}
+
+
+/* =========================================================
+   VN MENU
+========================================================= */
+
+.vn-menu {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 500;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    background:
+        rgba(0,0,0,0.75);
+
+    backdrop-filter:
+        blur(4px);
+
+    pointer-events: none;
+}
+
+.vn-menu.active,
+.vn-menu.open {
+    display: flex;
+
+    pointer-events: auto;
+}
+
+.vn-menu-panel {
+    width: min(
+        90%,
+        500px
+    );
+
+    padding: 35px;
+
+    border:
+        2px solid #fff;
+
+    background:
+        rgba(0,0,0,0.95);
+
+    box-shadow:
+        0 0 35px
+        rgba(0,0,0,0.8);
+
+    text-align: center;
+
+    pointer-events: auto;
+}
+
+.vn-menu-title {
+    margin-bottom: 30px;
+
+    color: #fff;
+
+    font-size: 32px;
+
+    letter-spacing: 5px;
+
+    text-shadow:
+        2px 0 #ff1744,
+        -2px 0 #00e5ff;
+}
+
+.vn-menu-option {
+    width: 100%;
+
+    margin-top: 8px;
+
+    padding: 13px;
+
+    border:
+        1px solid #444;
+
+    background: transparent;
+
+    color: #fff;
+
+    font-family: inherit;
+
+    font-size: 16px;
+
+    letter-spacing: 2px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.vn-menu-option:hover {
+    background: #fff;
+
+    color: #000;
+
+    border-color: #fff;
+}
+
+
+/* =========================================================
+   CHAPTER END
+========================================================= */
+
+#dialogue-text:empty {
+    opacity: 0.5;
+}
+
+
+/* =========================================================
+   TITLE GLITCH
+========================================================= */
+
+@keyframes titleFlicker {
+    0%,
+    18%,
+    22%,
+    63%,
+    100% {
+        opacity: 1;
+    }
+
+    20% {
+        opacity: 0.8;
+    }
+
+    21% {
+        opacity: 0.45;
+    }
+
+    64% {
+        opacity: 0.85;
+    }
+}
+
+@keyframes glitchRed {
+    0%,
+    80%,
+    100% {
+        clip-path:
+            inset(
+                0 0 55% 0
+            );
+
+        transform:
+            translateX(-3px);
+    }
+
+    82% {
+        clip-path:
+            inset(
+                20% 0 40% 0
+            );
+
+        transform:
+            translate(
+                -8px,
+                -2px
+            );
+    }
+
+    84% {
+        clip-path:
+            inset(
+                50% 0 20% 0
+            );
+
+        transform:
+            translate(
+                4px,
+                1px
+            );
+    }
+}
+
+@keyframes glitchBlue {
+    0%,
+    75%,
+    100% {
+        clip-path:
+            inset(
+                55% 0 0 0
+            );
+
+        transform:
+            translateX(3px);
+    }
+
+    77% {
+        clip-path:
+            inset(
+                45% 0 25% 0
+            );
+
+        transform:
+            translate(
+                8px,
+                2px
+            );
+    }
+
+    79% {
+        clip-path:
+            inset(
+                70% 0 5% 0
+            );
+
+        transform:
+            translate(
+                -4px,
+                -1px
+            );
+    }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+html[data-reduced-motion="true"] *,
+html[data-reduced-motion="true"] *::before,
+html[data-reduced-motion="true"] *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+
+    scroll-behavior: auto !important;
+
+    transition-duration: 0.001ms !important;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 800px) {
+
+    .kd-settings-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .settings-content,
+    .save-content {
+        width: 94%;
+        padding: 20px;
+    }
+
+    .save-slots {
+        grid-template-columns: 1fr;
+    }
+
+    .game-subtitle {
+        letter-spacing: 4px;
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .loading-status {
+        left: 5%;
+
+        width: 40vw;
+    }
+
+    .loading-step {
+        font-size: 9px;
+
+        letter-spacing: 1px;
+
+        gap: 8px;
+    }
+
+    .loading-center {
+        width: 65vw;
+    }
+
+    .game-title {
+        font-size: 38px;
+
+        letter-spacing: 3px;
+    }
+
+    .game-subtitle {
+        font-size: 13px;
+
+        letter-spacing: 3px;
+    }
+
+    .menu-button {
+        width: 240px;
+
+        font-size: 18px;
+    }
+
+    .character {
+        bottom: 135px;
+
+        max-width: 80vw;
+
+        max-height: 60vh;
+    }
+
+    #z {
+        bottom: 140px;
+
+        max-height: 52vh;
+    }
+
+    #alice.alice-right {
+        left: 73%;
+    }
+
+    #z.z-visible {
+        left: 18%;
+    }
+
+    #dialogue-box {
+        left: 3%;
+        right: 3%;
+        bottom: 15px;
+
+        min-height: 130px;
+
+        padding:
+            24px
+            18px
+            15px;
+    }
+
+    #dialogue-text {
+        padding-right: 0;
+
+        font-size: 16px;
+    }
+
+    #speaker {
+        left: 18px;
+
+        font-size: 15px;
+    }
+
+    #next-button {
+        right: 12px;
+        bottom: 12px;
+
+        font-size: 12px;
+    }
+
+    .vn-menu-button {
+        top: 12px;
+        right: 12px;
+    }
+
+    .vn-menu-panel {
+        width: 92%;
+
+        padding: 25px;
+    }
+
+    .vn-menu-title {
+        font-size: 25px;
+    }
+
+    .save-slot-wrapper {
+        grid-template-columns:
+            minmax(0, 1fr)
+            70px;
+    }
+
+    .save-delete-button {
+        font-size: 8px;
+    }
+}
+
+
+@media (max-width: 400px) {
+
+    .game-title {
+        font-size: 30px;
+    }
+
+    .menu-button {
+        width: 210px;
+
+        font-size: 16px;
+    }
+
+    .character {
+        bottom: 125px;
+
+        max-width: 85vw;
+
+        max-height: 55vh;
+    }
+
+    #z {
+        bottom: 130px;
+
+        max-height: 48vh;
+    }
+
+    #dialogue-text {
+        font-size: 14px;
+    }
+
+    .settings-content,
+    .save-content {
+        padding: 12px;
+    }
+
+    .settings-title,
+    .save-title,
+    #save-screen-title {
+        font-size: 30px;
+
+        margin-bottom: 25px;
+    }
+
+    .settings-section {
+        padding: 12px;
+    }
+}
+
+
+/* =========================================================
+   TOUCH DEVICES
+========================================================= */
+
+@media (hover: none) {
+
+    .menu-button:hover,
+    .language-button:hover,
+    .save-slot:hover,
+    .vn-menu-option:hover,
+    #next-button:hover {
+        transform: none;
+    }
+}
+
+
+/* =========================================================
+   ACCESSIBILITY / FOCUS
+========================================================= */
+
+button:focus-visible,
+select:focus-visible,
+input:focus-visible {
+    outline:
+        2px solid #fff;
+
+    outline-offset: 3px;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #050505;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #444;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}

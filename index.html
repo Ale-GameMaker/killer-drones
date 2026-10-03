@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Killer Drones: An MD AU Story
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+<div id="game">
+
+    <img
+    id="vignette"
+    src="assets/blur.png"
+    alt=""
+    aria-hidden="true"
+    draggable="false"
+>
+
+
+    <!-- =====================================================
+         LOADING SCREEN
+    ====================================================== -->
+
+    <section
+        id="loading-screen"
+        class="screen active"
+    >
+
+        <div class="loading-content">
+
+            <div class="loading-status">
+
+                <div
+                    id="loading-step-1"
+                    class="loading-step"
+                >
+                    <span class="step-number">01</span>
+                    <span
+                        id="loading-text-1"
+                        class="step-text"
+                        data-i18n="loading.initializing"
+                    >
+                        INITIALIZING SYSTEM
+                    </span>
+                </div>
+
+                <div
+                    id="loading-step-2"
+                    class="loading-step"
+                >
+                    <span class="step-number">02</span>
+                    <span
+                        id="loading-text-2"
+                        class="step-text"
+                        data-i18n="loading.assets"
+                    >
+                        LOADING ASSETS
+                    </span>
+                </div>
+
+                <div
+                    id="loading-step-3"
+                    class="loading-step"
+                >
+                    <span class="step-number">03</span>
+                    <span
+                        id="loading-text-3"
+                        class="step-text"
+                        data-i18n="loading.story"
+                    >
+                        LOADING STORY
+                    </span>
+                </div>
+
+                <div
+                    id="loading-step-4"
+                    class="loading-step"
+                >
+                    <span class="step-number">04</span>
+                    <span
+                        id="loading-text-4"
+                        class="step-text"
+                        data-i18n="loading.audio"
+                    >
+                        INITIALIZING AUDIO
+                    </span>
+                </div>
+
+                <div
+                    id="loading-step-5"
+                    class="loading-step"
+                >
+                    <span class="step-number">05</span>
+                    <span
+                        id="loading-text-5"
+                        class="step-text"
+                        data-i18n="loading.ready"
+                    >
+                        READY
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div class="loading-center">
+
+                <div class="loading-bar">
+
+                    <div
+                        id="loading-progress"
+                        class="loading-progress"
+                    ></div>
+
+                </div>
+
+                <div
+                    id="loading-percent"
+                    class="loading-percent"
+                >
+                    0%
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         TITLE SCREEN
+    ====================================================== -->
+
+    <section
+        id="title-screen"
+        class="screen"
+    >
+
+        <div class="title-content">
+
+            <h1 class="game-title">
+                KILLER DRONES
+            </h1>
+
+            <div
+                id="game-subtitle"
+                class="game-subtitle"
+            >
+                AN MD AU STORY
+            </div>
+
+
+            <div class="title-menu">
+
+                <button
+                    id="start-button"
+                    class="menu-button"
+                    data-i18n="menu.start"
+                >
+                    START
+                </button>
+
+                <button
+                    id="continue-button"
+                    class="menu-button"
+                    data-i18n="menu.continue"
+                >
+                    CONTINUE
+                </button>
+
+                <button
+                    id="load-title-button"
+                    class="menu-button"
+                    data-i18n="menu.load"
+                >
+                    LOAD
+                </button>
+
+                <button
+                    id="settings-button"
+                    class="menu-button"
+                    data-i18n="menu.settings"
+                >
+                    SETTINGS
+                </button>
+
+            </div>
+
+
+            <div class="credits">
+
+                Made by: Ale_GamePlayer2003
+
+            </div>
+
+        </div>
+
+
+        <div class="version">
+            VERSION 0.2.0
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         SETTINGS
+    ====================================================== -->
+
+    <section
+        id="settings-screen"
+        class="screen"
+    >
+
+        <div class="settings-content">
+
+            <h2
+                id="settings-title"
+                class="settings-title"
+                data-i18n="settings.title"
+            >
+                SETTINGS
+            </h2>
+
+
+            <div class="settings-section">
+
+                <div
+                    id="settings-language-label"
+                    class="settings-label"
+                    data-i18n="settings.language"
+                >
+                    LANGUAGE
+                </div>
+
+
+                <div class="language-options">
+
+                    <button
+                        class="language-button"
+                        data-language="en"
+                    >
+                        ENGLISH
+                    </button>
+
+                    <button
+                        class="language-button"
+                        data-language="pt-BR"
+                    >
+                        PORTUGUÊS
+                    </button>
+
+                    <button
+                        class="language-button"
+                        data-language="es-419"
+                    >
+                        ESPAÑOL
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <button
+                id="settings-back-button"
+                class="menu-button back-button"
+                data-i18n="menu.back"
+            >
+                BACK
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         SAVE / LOAD SCREEN
+    ====================================================== -->
+
+    <section
+        id="save-screen"
+        class="screen"
+    >
+
+        <div class="save-content">
+
+            <h2
+                id="save-screen-title"
+                class="save-title"
+            >
+                LOAD
+            </h2>
+
+
+            <div
+                id="save-slots"
+                class="save-slots"
+            ></div>
+
+
+            <button
+                id="save-back-button"
+                class="menu-button back-button"
+                data-i18n="menu.back"
+            >
+                BACK
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         STORY SCREEN
+    ====================================================== -->
+
+    <section
+        id="story-screen"
+        class="screen"
+    >
+
+
+        <!-- BACKGROUND -->
+
+        <div id="background"></div>
+
+
+        <!-- WEATHER -->
+
+        <div id="weather"></div>
+
+
+        <!-- CHARACTERS -->
+
+        <div id="characters">
+
+            <img
+                id="alice"
+                class="character"
+                src="assets/characters/alice/Alice001.png"
+                alt="Alice"
+                draggable="false"
+            >
+
+            <img
+                id="z"
+                class="character"
+                alt="Z"
+                draggable="false"
+            >
+
+        </div>
+
+
+        <!-- DIALOGUE -->
+
+        <div id="dialogue-box">
+
+            <div id="speaker">
+                Alice
+            </div>
+
+            <div id="dialogue-text"></div>
+
+
+            <button
+                id="next-button"
+                data-i18n="story.next"
+            >
+                NEXT
+            </button>
+
+        </div>
+
+
+        <!-- VN MENU BUTTON -->
+
+        <button
+            id="vn-menu-button"
+            class="vn-menu-button"
+            aria-label="Open menu"
+            type="button"
+        >
+            ☰
+        </button>
+
+
+        <!-- VN MENU -->
+
+        <div
+            id="vn-menu"
+            class="vn-menu"
+        >
+
+            <div class="vn-menu-panel">
+
+                <div
+                    id="vn-menu-title"
+                    class="vn-menu-title"
+                    data-i18n="vn.menu"
+                >
+                    MENU
+                </div>
+
+
+                <button
+                    id="vn-continue"
+                    class="vn-menu-option"
+                    data-i18n="vn.continue"
+                    type="button"
+                >
+                    CONTINUE
+                </button>
+
+
+                <button
+                    id="vn-back-line"
+                    class="vn-menu-option"
+                    data-i18n="vn.back"
+                    type="button"
+                >
+                    BACK
+                </button>
+
+
+                <button
+                    id="vn-save"
+                    class="vn-menu-option"
+                    data-i18n="vn.save"
+                    type="button"
+                >
+                    SAVE
+                </button>
+
+
+                <button
+                    id="vn-load"
+                    class="vn-menu-option"
+                    data-i18n="vn.load"
+                    type="button"
+                >
+                    LOAD
+                </button>
+
+
+                <button
+                    id="vn-back-menu"
+                    class="vn-menu-option"
+                    data-i18n="vn.backMenu"
+                    type="button"
+                >
+                    BACK TO MENU
+                </button>
+
+
+                <button
+                    id="vn-close"
+                    class="vn-menu-option"
+                    data-i18n="vn.close"
+                    type="button"
+                >
+                    CLOSE
+                </button>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         AUDIO
+    ====================================================== -->
+
+    <audio
+        id="menu-music"
+        src="assets/audio/music/menu.ogg"
+        preload="auto"
+        loop
+    ></audio>
+
+
+    <audio
+        id="menu2-music"
+        preload="auto"
+        loop
+    ></audio>
+
+
+    <audio
+        id="story-music"
+        preload="auto"
+        loop
+    ></audio>
+
+
+    <audio
+        id="text-sound"
+        src="assets/audio/sfx/text.ogg"
+        preload="auto"
+    ></audio>
+
+
+    <audio
+        id="button-sound"
+        src="assets/audio/sfx/button.ogg"
+        preload="auto"
+    ></audio>
+
+
+</div>
+
+<!-- JavaScript principal -->
+<script src="script.js"></script>
+
+<!-- Lua runtime -->
+<script src="https://unpkg.com/fengari-web/dist/fengari-web.js"></script>
+
+<!-- Lua -->
+<script
+    type="application/lua"
+    src="blur.lua"
+></script>
+
+</body>
+
+</html>
