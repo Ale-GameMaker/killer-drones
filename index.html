@@ -204,6 +204,14 @@
                     SETTINGS
                 </button>
 
+                <button
+                    id="credits-button"
+                    class="menu-button"
+                    data-i18n="menu.credits"
+                >
+                    CREDITS
+                </button>
+
             </div>
 
 
@@ -217,7 +225,7 @@
 
 
         <div class="version">
-            VERSION 0.2.0
+            VERSION 0.4.0
         </div>
 
     </section>
@@ -243,7 +251,6 @@
                 SETTINGS
             </h2>
 
-
             <div class="settings-section">
 
                 <div
@@ -254,27 +261,17 @@
                     LANGUAGE
                 </div>
 
-
                 <div class="language-options">
 
-                    <button
-                        class="language-button"
-                        data-language="en"
-                    >
+                    <button class="language-button" data-language="en" type="button">
                         ENGLISH
                     </button>
 
-                    <button
-                        class="language-button"
-                        data-language="pt-BR"
-                    >
+                    <button class="language-button" data-language="pt-BR" type="button">
                         PORTUGUÊS
                     </button>
 
-                    <button
-                        class="language-button"
-                        data-language="es-419"
-                    >
+                    <button class="language-button" data-language="es-419" type="button">
                         ESPAÑOL
                     </button>
 
@@ -282,11 +279,93 @@
 
             </div>
 
+            <div class="kd-settings-grid">
+
+                <div class="kd-setting-row">
+                    <span class="setting-label">SHOW FPS</span>
+                    <input id="settings-fps" type="checkbox">
+                </div>
+
+                <div class="kd-setting-row">
+                    <span class="setting-label">QUALITY</span>
+                    <select id="settings-quality">
+                        <option value="low">LOW</option>
+                        <option value="medium">MEDIUM</option>
+                        <option value="high">HIGH</option>
+                    </select>
+                </div>
+
+                <div class="kd-setting-row">
+                    <span class="setting-label">VISUAL EFFECTS / SHADERS</span>
+                    <input id="settings-effects" type="checkbox">
+                </div>
+
+                <div class="kd-setting-row">
+                    <span class="setting-label">WEATHER</span>
+                    <input id="settings-weather" type="checkbox" checked>
+                </div>
+
+                <div class="kd-setting-row">
+                    <span class="setting-label">CRT EFFECT</span>
+                    <input id="settings-crt" type="checkbox" checked>
+                </div>
+
+                <div class="kd-setting-row">
+                    <span class="setting-label">TEXT SPEED</span>
+                    <input
+                        id="settings-text-speed"
+                        type="range"
+                        min="5"
+                        max="80"
+                        step="1"
+                        value="25"
+                    >
+                    <span id="settings-text-speed-value" class="kd-setting-value">25</span>
+                </div>
+
+                <div class="kd-setting-row">
+                    <span class="setting-label">MASTER VOLUME</span>
+                    <input
+                        id="settings-volume"
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.01"
+                        value="1"
+                    >
+                </div>
+
+                <div class="kd-setting-row">
+                    <span class="setting-label">MUSIC VOLUME</span>
+                    <input
+                        id="settings-music-volume"
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.01"
+                        value="0.35"
+                    >
+                </div>
+
+                <div class="kd-setting-row">
+                    <span class="setting-label">SFX VOLUME</span>
+                    <input
+                        id="settings-sfx-volume"
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.01"
+                        value="1"
+                    >
+                </div>
+
+            </div>
 
             <button
                 id="settings-back-button"
                 class="menu-button back-button"
                 data-i18n="menu.back"
+                type="button"
             >
                 BACK
             </button>
@@ -295,6 +374,51 @@
 
     </section>
 
+    <!-- =====================================================
+         CREDITS SCREEN
+    ====================================================== -->
+
+    <section
+        id="credits-screen"
+        class="screen"
+    >
+
+        <div
+            id="credits-grid"
+            class="credits-grid"
+            aria-hidden="true"
+        ></div>
+
+        <div class="credits-overlay"></div>
+
+        <div class="credits-content">
+
+            <h2
+                id="credits-title"
+                class="credits-title"
+            >
+                CREDITS
+            </h2>
+
+            <div class="credits-card">
+                <div class="credits-main-name">KILLER DRONES: AN MD AU STORY</div>
+                <div id="credits-by" class="credits-line credits-by">CREATED BY ALE_GAMEPLAYER2003</div>
+                <div id="credits-project" class="credits-line credits-project">WEB VISUAL NOVEL / AU PROJECT</div>
+                <div id="credits-version" class="credits-line credits-version">VERSION 0.2.0</div>
+            </div>
+
+            <button
+                id="credits-back-button"
+                class="menu-button back-button"
+                data-i18n="menu.back"
+                type="button"
+            >
+                BACK
+            </button>
+
+        </div>
+
+    </section>
 
 
     <!-- =====================================================
@@ -349,6 +473,11 @@
         <!-- BACKGROUND -->
 
         <div id="background"></div>
+
+        <!-- STORY-ONLY SHADER LAYER -->
+        <div id="shader-layer" aria-hidden="true">
+            <canvas id="shader-canvas"></canvas>
+        </div>
 
 
         <!-- WEATHER -->

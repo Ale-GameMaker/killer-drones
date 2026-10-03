@@ -121,6 +121,8 @@ Por mí está bien, vamos *ríe*
 
 @background outside
 
+Alice @sprite 001
+
 Z @sprite 001
 
 [en]

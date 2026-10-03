@@ -16,6 +16,8 @@ const DEFAULT_SETTINGS = {
     showFPS: true,
     quality: "high",
     effects: true,
+    weather: true,
+    crt: true,
     textSpeed: 25,
     masterVolume: 1,
     musicVolume: 0.35,
@@ -55,6 +57,7 @@ const UI_TEXT = {
         continue: "CONTINUE",
         load: "LOAD",
         settings: "SETTINGS",
+        credits: "CREDITS",
         back: "BACK",
         settingsTitle: "SETTINGS",
         language: "LANGUAGE",
@@ -81,6 +84,8 @@ const UI_TEXT = {
         fps: "SHOW FPS",
         quality: "QUALITY",
         effects: "VISUAL EFFECTS / SHADERS",
+        weather: "WEATHER",
+        crt: "CRT EFFECT",
         textSpeed: "TEXT SPEED",
         volume: "MASTER VOLUME",
         musicVolume: "MUSIC VOLUME",
@@ -93,6 +98,10 @@ const UI_TEXT = {
         fast: "FAST",
         normal: "NORMAL",
         slow: "SLOW",
+        creditsTitle: "CREDITS",
+        creditsBy: "CREATED BY ALE_GAMEPLAYER2003",
+        creditsProject: "WEB VISUAL NOVEL / AU PROJECT",
+        creditsVersion: "VERSION 0.2.0",
         loading: [
             "INITIALIZING SYSTEM",
             "LOADING ASSETS",
@@ -107,6 +116,7 @@ const UI_TEXT = {
         continue: "CONTINUAR",
         load: "CARREGAR",
         settings: "CONFIGURAÇÕES",
+        credits: "CRÉDITOS",
         back: "VOLTAR",
         settingsTitle: "CONFIGURAÇÕES",
         language: "IDIOMA",
@@ -133,6 +143,8 @@ const UI_TEXT = {
         fps: "MOSTRAR FPS",
         quality: "QUALIDADE",
         effects: "EFEITOS VISUAIS / SHADERS",
+        weather: "CLIMA",
+        crt: "EFEITO CRT",
         textSpeed: "VELOCIDADE DO TEXTO",
         volume: "VOLUME GERAL",
         musicVolume: "VOLUME DA MÚSICA",
@@ -145,6 +157,14 @@ const UI_TEXT = {
         fast: "RÁPIDA",
         normal: "NORMAL",
         slow: "LENTA",
+        creditsTitle: "CRÉDITOS",
+        creditsBy: "CRIADO POR ALE_GAMEPLAYER2003",
+        creditsProject: "VISUAL NOVEL WEB / PROJETO AU",
+        creditsVersion: "VERSÃO 0.2.0",
+        creditsTitle: "CRÉDITOS",
+        creditsBy: "CREADO POR ALE_GAMEPLAYER2003",
+        creditsProject: "VISUAL NOVEL WEB / PROYECTO AU",
+        creditsVersion: "VERSIÓN 0.2.0",
         loading: [
             "INICIALIZANDO SISTEMA",
             "CARREGANDO RECURSOS",
@@ -159,6 +179,7 @@ const UI_TEXT = {
         continue: "CONTINUAR",
         load: "CARGAR",
         settings: "CONFIGURACIÓN",
+        credits: "CRÉDITOS",
         back: "VOLVER",
         settingsTitle: "CONFIGURACIÓN",
         language: "IDIOMA",
@@ -185,6 +206,8 @@ const UI_TEXT = {
         fps: "MOSTRAR FPS",
         quality: "CALIDAD",
         effects: "EFECTOS VISUALES / SHADERS",
+        weather: "CLIMA",
+        crt: "EFECTO CRT",
         textSpeed: "VELOCIDAD DEL TEXTO",
         volume: "VOLUMEN GENERAL",
         musicVolume: "VOLUMEN DE MÚSICA",
@@ -316,6 +339,8 @@ function normalizeSettings() {
     }
 
     settings.effects = Boolean(settings.effects);
+    settings.weather = Boolean(settings.weather);
+    settings.crt = Boolean(settings.crt);
     settings.showFPS = Boolean(settings.showFPS);
 
     settings.textSpeed = clamp(Number(settings.textSpeed) || 25, 5, 80);
@@ -332,14 +357,15 @@ function cacheDOM() {
     const ids = [
         "loading-screen", "loading-progress", "loading-percent",
         "title-screen", "game-subtitle", "start-button", "continue-button",
-        "load-title-button", "settings-button",
+        "load-title-button", "settings-button", "credits-button",
 
         "settings-screen", "settings-title", "settings-language-label",
+        "credits-screen", "credits-title", "credits-back-button", "credits-grid",
         "settings-back-button",
 
-        "settings-fps", "settings-quality", "settings-effects",
+        "settings-fps", "settings-quality", "settings-effects", "settings-weather", "settings-crt",
         "settings-text-speed", "settings-volume", "settings-music-volume",
-        "settings-sfx-volume",
+        "settings-sfx-volume", "settings-text-speed-value",
 
         "fps-counter",
 
@@ -375,6 +401,7 @@ function showScreen(screen) {
         dom.loadingScreen,
         dom.titleScreen,
         dom.settingsScreen,
+        dom.creditsScreen,
         dom.saveScreen,
         dom.storyScreen
     ];
@@ -402,8 +429,19 @@ function updateUI() {
     setText(dom.continueButton, ui.continue);
     setText(dom.loadTitleButton, ui.load);
     setText(dom.settingsButton, ui.settings);
+    setText(dom.creditsButton, ui.credits);
 
     setText(dom.settingsTitle, ui.settingsTitle);
+    setText(dom.creditsTitle, ui.creditsTitle);
+    setText(dom.creditsBackButton, ui.back);
+
+    const creditsBy = document.querySelector(".credits-by");
+    const creditsProject = document.querySelector(".credits-project");
+    const creditsVersion = document.querySelector(".credits-version");
+
+    setText(creditsBy, ui.creditsBy);
+    setText(creditsProject, ui.creditsProject);
+    setText(creditsVersion, ui.creditsVersion);
     setText(dom.settingsLanguageLabel, ui.language);
     setText(dom.settingsBackButton, ui.back);
 
@@ -436,6 +474,16 @@ function updateUI() {
     if (dom.settingsEffects) {
         dom.settingsEffects.parentElement?.querySelector(".setting-label") &&
             (dom.settingsEffects.parentElement.querySelector(".setting-label").textContent = ui.effects);
+    }
+
+    if (dom.settingsWeather) {
+        dom.settingsWeather.parentElement?.querySelector(".setting-label") &&
+            (dom.settingsWeather.parentElement.querySelector(".setting-label").textContent = ui.weather);
+    }
+
+    if (dom.settingsCrt) {
+        dom.settingsCrt.parentElement?.querySelector(".setting-label") &&
+            (dom.settingsCrt.parentElement.querySelector(".setting-label").textContent = ui.crt);
     }
 
     if (dom.settingsTextSpeed) {
@@ -479,9 +527,19 @@ function updateSettingsUI() {
 
     if (dom.settingsFps) dom.settingsFps.checked = settings.showFPS;
     if (dom.settingsEffects) dom.settingsEffects.checked = settings.effects;
+    if (dom.settingsWeather) dom.settingsWeather.checked = settings.weather;
+    if (dom.settingsCrt) dom.settingsCrt.checked = settings.crt;
+
+    document.documentElement.classList.toggle(
+        "crt-disabled",
+        !settings.crt
+    );
 
     if (dom.settingsQuality) dom.settingsQuality.value = settings.quality;
     if (dom.settingsTextSpeed) dom.settingsTextSpeed.value = String(settings.textSpeed);
+    if (dom.settingsTextSpeedValue) {
+        dom.settingsTextSpeedValue.textContent = String(settings.textSpeed);
+    }
     if (dom.settingsVolume) dom.settingsVolume.value = String(settings.masterVolume);
     if (dom.settingsMusicVolume) dom.settingsMusicVolume.value = String(settings.musicVolume);
     if (dom.settingsSfxVolume) dom.settingsSfxVolume.value = String(settings.sfxVolume);
@@ -719,6 +777,7 @@ async function transitionToSubmenuMusic() {
     createMenu2Audio();
 
     if (!menu2Available) {
+        await stopMenuMusic();
         return;
     }
 
@@ -1172,6 +1231,7 @@ function updateWeather(name) {
 
     if (
         normalized === "snow" &&
+        settings.weather &&
         settings.effects &&
         settings.quality !== "low"
     ) {
@@ -2043,6 +2103,70 @@ async function continueGame() {
 }
 
 /* =========================================================
+   CREDITS
+========================================================= */
+
+function buildCreditsGrid() {
+    if (!dom.creditsGrid) return;
+
+    const width = Math.max(window.innerWidth, 320);
+    const height = Math.max(window.innerHeight, 480);
+
+    const tileSize =
+        width <= 700 ? 92 :
+        width <= 1100 ? 110 :
+        128;
+
+    const columns = Math.ceil(width / tileSize) + 4;
+    const rows = Math.ceil(height / tileSize) + 4;
+
+    dom.creditsGrid.textContent = "";
+    dom.creditsGrid.style.gridTemplateColumns =
+        `repeat(${columns}, minmax(0, 1fr))`;
+
+    const fragment = document.createDocumentFragment();
+
+    for (let row = 0; row < rows; row++) {
+        for (let column = 0; column < columns; column++) {
+            const image = document.createElement("img");
+
+            image.className = "credits-grid-tile";
+            image.src = "assets/images/grid/grid-evil.png";
+            image.alt = "";
+            image.draggable = false;
+
+            /*
+             * Each tile moves as part of the same diagonal field.
+             * The animation is intentionally subtle so the credits
+             * remain readable on both desktop and mobile.
+             */
+            image.style.animationDelay =
+                `${-(row * 0.08 + column * 0.045)}s`;
+
+            fragment.appendChild(image);
+        }
+    }
+
+    dom.creditsGrid.appendChild(fragment);
+}
+
+async function openCredits() {
+    playButtonSound();
+
+    showScreen(dom.creditsScreen);
+    buildCreditsGrid();
+
+    await transitionToSubmenuMusic();
+}
+
+async function closeCredits() {
+    playButtonSound();
+
+    showScreen(dom.titleScreen);
+    await transitionToMainMenuMusic();
+}
+
+/* =========================================================
    SETTINGS
 ========================================================= */
 
@@ -2084,6 +2208,38 @@ function setupSettingsControls() {
                         storyLines[currentLine]
                     );
                 }
+            }
+        );
+    }
+
+    if (dom.settingsWeather) {
+        dom.settingsWeather.addEventListener(
+            "change",
+            () => {
+                settings.weather = dom.settingsWeather.checked;
+
+                saveSettings();
+                updateSettingsUI();
+
+                if (storyLines[currentLine]) {
+                    updateWeather(null);
+
+                    if (settings.weather) {
+                        updateWeather(storyLines[currentLine].weather);
+                    }
+                }
+            }
+        );
+    }
+
+    if (dom.settingsCrt) {
+        dom.settingsCrt.addEventListener(
+            "change",
+            () => {
+                settings.crt = dom.settingsCrt.checked;
+
+                saveSettings();
+                updateSettingsUI();
             }
         );
     }
@@ -2338,10 +2494,24 @@ function setupEvents() {
         );
     }
 
+    if (dom.creditsButton) {
+        dom.creditsButton.addEventListener(
+            "click",
+            openCredits
+        );
+    }
+
     if (dom.settingsBackButton) {
         dom.settingsBackButton.addEventListener(
             "click",
             closeSettings
+        );
+    }
+
+    if (dom.creditsBackButton) {
+        dom.creditsBackButton.addEventListener(
+            "click",
+            closeCredits
         );
     }
 
@@ -2523,6 +2693,15 @@ function setupEvents() {
         }
     );
 }
+
+window.addEventListener("resize", () => {
+    if (
+        dom.creditsScreen &&
+        dom.creditsScreen.classList.contains("active")
+    ) {
+        buildCreditsGrid();
+    }
+});
 
 /* =========================================================
    VIGNETTE FALLBACK
