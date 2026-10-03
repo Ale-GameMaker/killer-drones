@@ -204,6 +204,14 @@
                     SETTINGS
                 </button>
 
+                <button
+                    id="credits-button"
+                    class="menu-button"
+                    data-i18n="menu.credits"
+                >
+                    CREDITS
+                </button>
+
             </div>
 
 
@@ -254,7 +262,6 @@
                     LANGUAGE
                 </div>
 
-
                 <div class="language-options">
 
                     <button
@@ -282,6 +289,60 @@
 
             </div>
 
+            <div class="kd-settings-grid">
+
+                <div class="kd-setting-row">
+                    <label class="setting-label" for="settings-fps">SHOW FPS</label>
+                    <input id="settings-fps" type="checkbox">
+                </div>
+
+                <div class="kd-setting-row">
+                    <label class="setting-label" for="settings-quality">QUALITY</label>
+                    <select id="settings-quality">
+                        <option value="low">LOW</option>
+                        <option value="medium">MEDIUM</option>
+                        <option value="high">HIGH</option>
+                    </select>
+                </div>
+
+                <div class="kd-setting-row">
+                    <label class="setting-label" for="settings-effects">VISUAL EFFECTS / SHADERS</label>
+                    <input id="settings-effects" type="checkbox">
+                </div>
+
+                <div class="kd-setting-row">
+                    <label class="setting-label" for="settings-text-speed">TEXT SPEED</label>
+                    <input id="settings-text-speed" type="range" min="5" max="80" step="1">
+                    <div class="kd-setting-value" id="settings-text-speed-value">25</div>
+                </div>
+
+                <div class="kd-setting-row">
+                    <label class="setting-label" for="settings-volume">MASTER VOLUME</label>
+                    <input id="settings-volume" type="range" min="0" max="1" step="0.01">
+                    <div class="kd-setting-value" id="settings-volume-value">100%</div>
+                </div>
+
+                <div class="kd-setting-row">
+                    <label class="setting-label" for="settings-music-volume">MUSIC VOLUME</label>
+                    <input id="settings-music-volume" type="range" min="0" max="1" step="0.01">
+                    <div class="kd-setting-value" id="settings-music-volume-value">35%</div>
+                </div>
+
+                <div class="kd-setting-row">
+                    <label class="setting-label" for="settings-sfx-volume">SFX VOLUME</label>
+                    <input id="settings-sfx-volume" type="range" min="0" max="1" step="0.01">
+                    <div class="kd-setting-value" id="settings-sfx-volume-value">100%</div>
+                </div>
+
+            </div>
+
+            <button
+                id="settings-reset-button"
+                class="kd-settings-reset"
+                type="button"
+            >
+                RESET SETTINGS
+            </button>
 
             <button
                 id="settings-back-button"
@@ -295,6 +356,47 @@
 
     </section>
 
+
+
+
+
+    <!-- =====================================================
+         CREDITS
+    ====================================================== -->
+
+    <section id="credits-screen" class="screen">
+
+        <div id="credits-grid" aria-hidden="true"></div>
+
+        <div class="credits-content">
+            <h2 id="credits-title" class="credits-title" data-i18n="credits.title">CREDITS</h2>
+
+            <div class="credits-grid-content">
+                <div class="credit-card">
+                    <div class="credit-role" data-i18n="credits.creatorRole">CREATOR / DEVELOPER</div>
+                    <div class="credit-name">Ale_GamePlayer2003</div>
+                </div>
+
+                <div class="credit-card">
+                    <div class="credit-role" data-i18n="credits.projectRole">PROJECT</div>
+                    <div class="credit-name">Killer Drones: An MD AU Story</div>
+                </div>
+
+                <div class="credit-card">
+                    <div class="credit-role" data-i18n="credits.techRole">TECHNOLOGY</div>
+                    <div class="credit-name">HTML / CSS / JavaScript / GLSL</div>
+                </div>
+
+                <div class="credit-card">
+                    <div class="credit-role" data-i18n="credits.fontRole">FONT</div>
+                    <div class="credit-name">VCR OSD Mono</div>
+                </div>
+            </div>
+
+            <button id="credits-back-button" class="menu-button back-button" data-i18n="menu.back">BACK</button>
+        </div>
+
+    </section>
 
 
     <!-- =====================================================
@@ -354,6 +456,8 @@
         <!-- WEATHER -->
 
         <div id="weather"></div>
+
+        <div id="fps-counter" aria-hidden="true">0 FPS</div>
 
 
         <!-- CHARACTERS -->

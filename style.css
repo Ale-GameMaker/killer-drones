@@ -2680,3 +2680,227 @@ input:focus-visible {
         max-height: 50vh;
     }
 }
+
+/* =========================================================
+   RESTORED CREDITS SCREEN
+========================================================= */
+
+#credits-screen {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: #050505;
+    align-items: center;
+    justify-content: center;
+}
+
+#credits-screen.active {
+    display: flex;
+}
+
+#credits-grid {
+    position: absolute;
+    inset: -35%;
+    width: 170%;
+    height: 170%;
+    background-image: url("assets/images/grid/grid_evil.png");
+    background-repeat: repeat;
+    background-size: 180px 180px;
+    opacity: 0.58;
+    mix-blend-mode: screen;
+    filter: brightness(2.6) contrast(1.2);
+    pointer-events: none;
+    z-index: 0;
+    animation: creditsGridMove 8s linear infinite;
+}
+
+@keyframes creditsGridMove {
+    from { transform: translate3d(-90px, -90px, 0); }
+    to   { transform: translate3d(90px, 90px, 0); }
+}
+
+#credits-screen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: radial-gradient(circle at center,
+        rgba(0,0,0,0.25) 0%,
+        rgba(0,0,0,0.68) 72%,
+        rgba(0,0,0,0.9) 100%);
+}
+
+.credits-content {
+    position: relative;
+    z-index: 2;
+    width: min(900px, 90vw);
+    max-height: 90dvh;
+    overflow-y: auto;
+    text-align: center;
+    padding: 35px 25px;
+}
+
+.credits-title {
+    margin-bottom: 35px;
+    color: #fff;
+    font-size: clamp(36px, 6vw, 64px);
+    letter-spacing: 5px;
+    text-shadow: 3px 0 #ff1744, -3px 0 #00e5ff;
+}
+
+.credits-grid-content {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    width: 100%;
+}
+
+.credit-card {
+    min-height: 105px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.25);
+    background: rgba(0,0,0,0.72);
+    text-align: left;
+}
+
+.credit-role {
+    margin-bottom: 12px;
+    color: #777;
+    font-size: 11px;
+    letter-spacing: 3px;
+}
+
+.credit-name {
+    color: #fff;
+    font-size: 16px;
+    line-height: 1.45;
+}
+
+/* =========================================================
+   FPS COUNTER
+========================================================= */
+
+#fps-counter {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 300;
+    min-width: 72px;
+    padding: 5px 8px;
+    border: 1px solid rgba(255,255,255,0.35);
+    background: rgba(0,0,0,0.72);
+    color: #fff;
+    font-family: inherit;
+    font-size: 11px;
+    letter-spacing: 1px;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* =========================================================
+   MOBILE CHARACTER SCALE FIX
+   Characters are deliberately larger than the previous build.
+========================================================= */
+
+@media (max-width: 700px) {
+    .character {
+        bottom: 112px;
+        height: 68dvh;
+        width: auto;
+        max-width: 94vw;
+        max-height: none;
+    }
+
+    #alice {
+        left: 50%;
+    }
+
+    #alice.alice-right {
+        left: 74%;
+    }
+
+    #z {
+        bottom: 116px;
+        height: 62dvh;
+        max-width: 76vw;
+        max-height: none;
+    }
+
+    #z.z-visible {
+        left: 20%;
+    }
+
+    #dialogue-box {
+        bottom: 10px;
+        min-height: 125px;
+    }
+
+    #fps-counter {
+        top: 8px;
+        left: 8px;
+        font-size: 10px;
+    }
+
+    .credits-content {
+        width: 94vw;
+        max-height: 88dvh;
+        padding: 25px 12px;
+    }
+
+    .credits-grid-content {
+        grid-template-columns: 1fr;
+    }
+
+    #credits-grid {
+        background-size: 130px 130px;
+        opacity: 0.62;
+        animation-duration: 6s;
+    }
+}
+
+@media (max-width: 400px) {
+    .character {
+        bottom: 105px;
+        height: 66dvh;
+        max-width: 96vw;
+    }
+
+    #z {
+        bottom: 108px;
+        height: 59dvh;
+        max-width: 82vw;
+    }
+
+    .credits-title {
+        font-size: 30px;
+        margin-bottom: 24px;
+    }
+
+    .credit-card {
+        min-height: 90px;
+        padding: 15px;
+    }
+
+    .credit-name {
+        font-size: 14px;
+    }
+}
+
+@media (max-height: 650px) and (orientation: landscape) {
+    .character {
+        bottom: 100px;
+        height: 62vh;
+    }
+
+    #z {
+        bottom: 103px;
+        height: 56vh;
+    }
+
+    .credits-content {
+        max-height: 94vh;
+        padding-top: 15px;
+        padding-bottom: 15px;
+    }
+}

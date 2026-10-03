@@ -55,8 +55,15 @@ const UI_TEXT = {
         continue: "CONTINUE",
         load: "LOAD",
         settings: "SETTINGS",
+        credits: "CREDITS",
         back: "BACK",
         settingsTitle: "SETTINGS",
+        creditsTitle: "CREDITS",
+        creatorRole: "CREATOR / DEVELOPER",
+        projectRole: "PROJECT",
+        techRole: "TECHNOLOGY",
+        fontRole: "FONT",
+        resetSettings: "RESET SETTINGS",
         language: "LANGUAGE",
         menu: "MENU",
         menuContinue: "CONTINUE",
@@ -107,8 +114,15 @@ const UI_TEXT = {
         continue: "CONTINUAR",
         load: "CARREGAR",
         settings: "CONFIGURAÇÕES",
+        credits: "CRÉDITOS",
         back: "VOLTAR",
         settingsTitle: "CONFIGURAÇÕES",
+        creditsTitle: "CRÉDITOS",
+        creatorRole: "CRIADOR / DESENVOLVEDOR",
+        projectRole: "PROJETO",
+        techRole: "TECNOLOGIA",
+        fontRole: "FONTE",
+        resetSettings: "REDEFINIR CONFIGURAÇÕES",
         language: "IDIOMA",
         menu: "MENU",
         menuContinue: "CONTINUAR",
@@ -159,8 +173,15 @@ const UI_TEXT = {
         continue: "CONTINUAR",
         load: "CARGAR",
         settings: "CONFIGURACIÓN",
+        credits: "CRÉDITOS",
         back: "VOLVER",
         settingsTitle: "CONFIGURACIÓN",
+        creditsTitle: "CRÉDITOS",
+        creatorRole: "CREADOR / DESARROLLADOR",
+        projectRole: "PROYECTO",
+        techRole: "TECNOLOGÍA",
+        fontRole: "FUENTE",
+        resetSettings: "RESTABLECER CONFIGURACIÓN",
         language: "IDIOMA",
         menu: "MENÚ",
         menuContinue: "CONTINUAR",
@@ -333,9 +354,11 @@ function cacheDOM() {
     const ids = [
         "loading-screen", "loading-progress", "loading-percent",
         "title-screen", "game-subtitle", "start-button", "continue-button",
-        "load-title-button", "settings-button",
+        "load-title-button", "settings-button", "credits-button",
 
-        "settings-screen", "settings-title", "settings-language-label",
+        "settings-screen", "credits-screen", "credits-title", "credits-back-button",
+        "settings-reset-button",
+        "settings-title", "settings-language-label",
         "settings-back-button",
 
         "settings-fps", "settings-quality", "settings-effects",
@@ -376,6 +399,7 @@ function showScreen(screen) {
         dom.loadingScreen,
         dom.titleScreen,
         dom.settingsScreen,
+        dom.creditsScreen,
         dom.saveScreen,
         dom.storyScreen
     ];
@@ -403,8 +427,10 @@ function updateUI() {
     setText(dom.continueButton, ui.continue);
     setText(dom.loadTitleButton, ui.load);
     setText(dom.settingsButton, ui.settings);
+    setText(dom.creditsButton, ui.credits);
 
     setText(dom.settingsTitle, ui.settingsTitle);
+    setText(dom.creditsTitle, ui.creditsTitle);
     setText(dom.settingsLanguageLabel, ui.language);
     setText(dom.settingsBackButton, ui.back);
 
@@ -459,6 +485,10 @@ function updateUI() {
             (dom.settingsSfxVolume.parentElement.querySelector(".setting-label").textContent = ui.sfxVolume);
     }
 
+    if (dom.settingsResetButton) {
+        dom.settingsResetButton.textContent = ui.resetSettings;
+    }
+
     if (dom.deleteAllSavesButton) {
         dom.deleteAllSavesButton.textContent = ui.deleteAll;
     }
@@ -486,6 +516,16 @@ function updateSettingsUI() {
     if (dom.settingsVolume) dom.settingsVolume.value = String(settings.masterVolume);
     if (dom.settingsMusicVolume) dom.settingsMusicVolume.value = String(settings.musicVolume);
     if (dom.settingsSfxVolume) dom.settingsSfxVolume.value = String(settings.sfxVolume);
+
+    const textSpeedValue = document.getElementById("settings-text-speed-value");
+    const volumeValue = document.getElementById("settings-volume-value");
+    const musicVolumeValue = document.getElementById("settings-music-volume-value");
+    const sfxVolumeValue = document.getElementById("settings-sfx-volume-value");
+
+    if (textSpeedValue) textSpeedValue.textContent = String(settings.textSpeed);
+    if (volumeValue) volumeValue.textContent = `${Math.round(settings.masterVolume * 100)}%`;
+    if (musicVolumeValue) musicVolumeValue.textContent = `${Math.round(settings.musicVolume * 100)}%`;
+    if (sfxVolumeValue) sfxVolumeValue.textContent = `${Math.round(settings.sfxVolume * 100)}%`;
 
     document.documentElement.dataset.quality = settings.quality;
     document.documentElement.dataset.effects = settings.effects ? "on" : "off";
@@ -2364,6 +2404,18 @@ async function closeSettings() {
     await transitionToMainMenuMusic();
 }
 
+async function openCredits() {
+    playButtonSound();
+    showScreen(dom.creditsScreen);
+    await stopMenu2IfNeeded();
+}
+
+async function closeCredits() {
+    playButtonSound();
+    showScreen(dom.titleScreen);
+    await transitionToMainMenuMusic();
+}
+
 async function stopMenu2IfNeeded() {
     createMenu2Audio();
 
@@ -2510,6 +2562,27 @@ function setupEvents() {
             "click",
             openSettings
         );
+    }
+
+    if (dom.creditsButton) {
+        dom.creditsButton.addEventListener("click", openCredits);
+    }
+
+    if (dom.creditsBackButton) {
+        dom.creditsBackButton.addEventListener("click", closeCredits);
+    }
+
+    if (dom.settingsResetButton) {
+        dom.settingsResetButton.addEventListener("click", () => {
+            playButtonSound();
+            settings = { ...DEFAULT_SETTINGS };
+            saveSettings();
+            updateSettingsUI();
+            if (currentWeather === "snow") {
+                updateWeather(null);
+                updateWeather("snow");
+            }
+        });
     }
 
     if (dom.settingsBackButton) {
