@@ -1988,3 +1988,562 @@ input:focus-visible {
 ::-webkit-scrollbar-thumb:hover {
     background: #777;
 }
+
+/* =========================================================
+   STORY SHADER LAYER
+   GLSL APPLIES ONLY TO THE STORY SCENE
+========================================================= */
+
+#story-screen {
+    position: absolute;
+    inset: 0;
+    isolation: isolate;
+    overflow: hidden;
+}
+
+
+/*
+ * The shader canvas is strictly a STORY-only layer.
+ *
+ * It must never cover:
+ * - dialogue
+ * - VN menu
+ * - VN menu button
+ * - title screen
+ * - settings
+ * - save screen
+ */
+
+#shader-layer {
+
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    z-index: 5;
+
+    pointer-events: none;
+
+    display: none;
+
+    overflow: hidden;
+}
+
+
+#shader-layer.active {
+
+    display: block;
+}
+
+
+#shader-canvas {
+
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   STORY LAYERS
+========================================================= */
+
+/*
+ * Background remains underneath the lighting effect.
+ */
+
+#background {
+
+    z-index: 0;
+}
+
+
+/*
+ * Weather remains above the lighting layer.
+ */
+
+#weather {
+
+    z-index: 20;
+}
+
+
+/*
+ * Characters are still part of the scene.
+ */
+
+#characters {
+
+    z-index: 30;
+}
+
+
+/*
+ * Dialogue is NEVER affected by the shader.
+ */
+
+#dialogue-box {
+
+    z-index: 100;
+}
+
+
+/*
+ * VN controls are NEVER affected by the shader.
+ */
+
+.vn-menu-button {
+
+    z-index: 200;
+}
+
+
+.vn-menu {
+
+    z-index: 500;
+}
+
+
+/* =========================================================
+   STORY LIGHTING STATE
+========================================================= */
+
+#story-screen.shader-enabled {
+
+    --story-shadow: 1;
+}
+
+
+#story-screen.shader-disabled {
+
+    --story-shadow: 0;
+}
+
+
+/* =========================================================
+   IMPORTANT:
+   DO NOT APPLY FILTERS TO #game
+========================================================= */
+
+/*
+ * NEVER do this:
+ *
+ * #game {
+ *     filter: brightness(...);
+ * }
+ *
+ * It would darken menus, buttons and settings too.
+ */
+
+
+/* =========================================================
+   STORY CHARACTER LIGHTING
+========================================================= */
+
+/*
+ * Character darkness is intentionally subtle.
+ *
+ * This is only a fallback for browsers where the WebGL
+ * shader cannot initialize. It is NOT the GLSL effect itself.
+ */
+
+#story-screen.shader-fallback #characters .character {
+
+    filter:
+        brightness(0.78)
+        contrast(1.04);
+}
+
+
+/*
+ * The background fallback is slightly darker.
+ */
+
+#story-screen.shader-fallback #background {
+
+    filter:
+        brightness(0.62)
+        contrast(1.08);
+}
+
+
+/*
+ * UI stays completely untouched even in fallback mode.
+ */
+
+#story-screen.shader-fallback #dialogue-box,
+#story-screen.shader-fallback #vn-menu-button,
+#story-screen.shader-fallback #vn-menu {
+
+    filter: none;
+}
+
+/* =========================================================
+   MOBILE ADAPTATION
+   SAME GAME VERSION
+========================================================= */
+
+@media (max-width: 700px) {
+
+    #game {
+        width: 100vw;
+        height: 100dvh;
+    }
+
+
+    /* =========================
+       TITLE
+    ========================= */
+
+    .title-content {
+        width: 92%;
+    }
+
+
+    .game-title {
+        font-size: clamp(
+            30px,
+            10vw,
+            58px
+        );
+
+        letter-spacing: 3px;
+    }
+
+
+    .game-subtitle {
+        margin-top: 12px;
+
+        font-size: 12px;
+
+        letter-spacing: 3px;
+    }
+
+
+    .title-menu {
+        margin-top: 45px;
+
+        gap: 10px;
+    }
+
+
+    .menu-button {
+        width: min(
+            82vw,
+            340px
+        );
+
+        padding: 13px 16px;
+
+        font-size: 17px;
+    }
+
+
+    /* =========================
+       SETTINGS
+    ========================= */
+
+    .settings-content,
+    .save-content {
+        width: 92%;
+        max-width: none;
+
+        max-height: 90dvh;
+
+        overflow-y: auto;
+    }
+
+
+    .settings-title,
+    .save-title {
+        margin-bottom: 28px;
+
+        font-size: clamp(
+            30px,
+            8vw,
+            48px
+        );
+
+        letter-spacing: 3px;
+    }
+
+
+    .settings-section {
+        margin-bottom: 24px;
+    }
+
+
+    .settings-label {
+        margin-bottom: 12px;
+
+        font-size: 13px;
+
+        letter-spacing: 2px;
+    }
+
+
+    .language-button {
+        width: 100%;
+
+        padding: 12px;
+
+        font-size: 14px;
+    }
+
+
+    /* =========================
+       SAVE
+    ========================= */
+
+    .save-slots {
+        grid-template-columns: 1fr;
+
+        max-height: 60dvh;
+    }
+
+
+    /* =========================
+       STORY
+    ========================= */
+
+    #story-screen {
+        height: 100dvh;
+    }
+
+
+    #background {
+        background-position: center center;
+    }
+
+
+    /* =========================
+       CHARACTERS
+    ========================= */
+
+    .character {
+        bottom: 125px;
+
+        max-width: 78vw;
+
+        max-height: 58dvh;
+    }
+
+
+    #alice {
+        left: 50%;
+    }
+
+
+    #alice.alice-right {
+        left: 72%;
+    }
+
+
+    #z {
+        bottom: 130px;
+
+        max-height: 52dvh;
+    }
+
+
+    #z.z-visible {
+        left: 18%;
+    }
+
+
+    /* =========================
+       DIALOGUE
+    ========================= */
+
+    #dialogue-box {
+
+        left: 3vw;
+        right: 3vw;
+
+        bottom: 12px;
+
+        min-height: 125px;
+
+        padding:
+            23px
+            16px
+            14px;
+    }
+
+
+    #speaker {
+
+        left: 16px;
+
+        top: -16px;
+
+        padding:
+            4px
+            11px;
+
+        font-size: 14px;
+
+        letter-spacing: 1px;
+    }
+
+
+    #dialogue-text {
+
+        min-height: 55px;
+
+        padding-right: 0;
+
+        font-size: clamp(
+            14px,
+            4vw,
+            17px
+        );
+
+        line-height: 1.45;
+    }
+
+
+    #next-button {
+
+        right: 10px;
+
+        bottom: 10px;
+
+        padding:
+            7px
+            12px;
+
+        font-size: 12px;
+    }
+
+
+    /* =========================
+       VN BUTTON
+    ========================= */
+
+    .vn-menu-button {
+
+        top: 10px;
+
+        right: 10px;
+
+        width: 44px;
+
+        height: 44px;
+
+        font-size: 20px;
+    }
+
+
+    /* =========================
+       VN MENU
+    ========================= */
+
+    .vn-menu-panel {
+
+        width: 90vw;
+
+        max-height: 85dvh;
+
+        overflow-y: auto;
+
+        padding: 25px 18px;
+    }
+
+
+    .vn-menu-title {
+
+        margin-bottom: 20px;
+
+        font-size: 25px;
+
+        letter-spacing: 3px;
+    }
+
+
+    .vn-menu-option {
+
+        padding: 12px;
+
+        font-size: 14px;
+    }
+}
+
+
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
+@media (max-width: 400px) {
+
+    .game-title {
+        font-size: 27px;
+    }
+
+
+    .game-subtitle {
+        font-size: 10px;
+
+        letter-spacing: 2px;
+    }
+
+
+    .title-menu {
+        margin-top: 35px;
+    }
+
+
+    .menu-button {
+        width: 86vw;
+
+        font-size: 15px;
+    }
+
+
+    .character {
+        bottom: 120px;
+
+        max-width: 84vw;
+
+        max-height: 53dvh;
+    }
+
+
+    #z {
+        bottom: 125px;
+
+        max-height: 48dvh;
+    }
+
+
+    #dialogue-box {
+        bottom: 9px;
+
+        min-height: 115px;
+
+        padding:
+            21px
+            13px
+            12px;
+    }
+
+
+    #dialogue-text {
+        font-size: 14px;
+    }
+
+
+    #speaker {
+        font-size: 12px;
+    }
+}
