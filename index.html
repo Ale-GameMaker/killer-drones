@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-layout="pc">
 
 <head>
 
@@ -16,7 +16,7 @@
 
     <link
         rel="stylesheet"
-        href="style.css"
+        href="style-pc.css"
     >
 
 </head>
@@ -25,14 +25,6 @@
 <body>
 
 <div id="game">
-
-    <img
-    id="vignette"
-    src="assets/blur.png"
-    alt=""
-    aria-hidden="true"
-    draggable="false"
->
 
 
     <!-- =====================================================
@@ -148,13 +140,54 @@
 
 
     <!-- =====================================================
+         CONTENT WARNING
+    ====================================================== -->
+
+    <section id="warning-screen" class="screen" aria-labelledby="warning-title">
+        <div class="warning-panel">
+            <div class="warning-terminal">
+                <p class="warning-command-prefix">C:\KILLER_DRONES&gt; WARNING.EXE</p>
+                <h1 id="warning-title" class="warning-title">SYSTEM WARNING</h1>
+                <section class="warning-section">
+                    <h2 id="warning-epilepsy-title">FLASHING LIGHTS</h2>
+                    <p id="warning-epilepsy-text"></p>
+                </section>
+                <section class="warning-section">
+                    <h2 id="warning-graphics-title">GRAPHICS AND PERFORMANCE</h2>
+                    <p id="warning-graphics-text"></p>
+                </section>
+                <p id="warning-language-label" class="warning-language-label">Language:</p>
+                <div class="warning-language-options">
+                    <button class="language-button warning-language-button" data-language="en">[EN]</button>
+                    <button class="language-button warning-language-button" data-language="pt-BR">[PT-BR]</button>
+                    <button class="language-button warning-language-button" data-language="es-419">[ES]</button>
+                </div>
+                <label class="warning-command-row" for="warning-command-input">
+                    <span id="warning-prompt" class="warning-prompt"></span>
+                    <span class="warning-input-wrap">
+                        <input id="warning-command-input" type="text" maxlength="1" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Type Y or N">
+                        <span class="warning-block-cursor" aria-hidden="true"></span>
+                    </span>
+                </label>
+            </div>
+        </div>
+    </section>
+
+    <div id="fps-counter" aria-hidden="true">0 FPS</div>
+
+
+    <!-- =====================================================
          TITLE SCREEN
     ====================================================== -->
 
     <section
         id="title-screen"
-        class="screen"
+        class="screen title-gated"
     >
+
+        <div class="title-characters" aria-hidden="true">
+            <img src="assets/images/title/alicenz.png" alt="" draggable="false">
+        </div>
 
         <div class="title-content">
 
@@ -168,6 +201,8 @@
             >
                 AN MD AU STORY
             </div>
+
+            <button id="title-start-prompt" class="title-start-prompt" type="button"></button>
 
 
             <div class="title-menu">
@@ -225,9 +260,31 @@
 
 
         <div class="version">
-            VERSION 0.2.0
+            VERSION 1.0.0
         </div>
 
+    </section>
+
+    <section id="play-screen" class="screen">
+        <div class="play-content">
+            <h2 id="play-title" class="play-title">PLAY</h2>
+            <div class="play-tabs">
+                <button id="chapters-tab" class="play-tab active" type="button">CHAPTERS</button>
+                <button id="achievements-tab" class="play-tab" type="button">ACHIEVEMENTS</button>
+            </div>
+            <div id="chapters-panel" class="play-panel">
+                <div class="chapter-carousel">
+                    <button id="chapter-previous" class="carousel-arrow" type="button" aria-label="Previous chapter">‹</button>
+                    <article id="chapter-card" class="chapter-card"></article>
+                    <button id="chapter-next" class="carousel-arrow" type="button" aria-label="Next chapter">›</button>
+                </div>
+                <button id="play-chapter-button" class="menu-button" type="button">PLAY CHAPTER</button>
+            </div>
+            <div id="achievements-panel" class="play-panel achievements-panel" hidden>
+                <div id="achievement-list" class="achievement-list"></div>
+            </div>
+            <button id="play-back-button" class="menu-button back-button" type="button">BACK</button>
+        </div>
     </section>
 
 
@@ -302,12 +359,23 @@
                         <option value="low">LOW</option>
                         <option value="medium">MEDIUM</option>
                         <option value="high">HIGH</option>
+                        <option value="ultra">ULTRA</option>
                     </select>
                 </div>
 
                 <div class="kd-setting-row">
                     <label class="setting-label" for="settings-effects">VISUAL EFFECTS / SHADERS</label>
                     <input id="settings-effects" type="checkbox">
+                </div>
+
+                <div class="kd-setting-row">
+                    <label class="setting-label" for="settings-flashing-lights">FLASHING LIGHTS</label>
+                    <input id="settings-flashing-lights" type="checkbox">
+                </div>
+
+                <div class="kd-setting-row">
+                    <label class="setting-label" for="settings-mouse-light">MOUSE LIGHT (L)</label>
+                    <input id="settings-mouse-light" type="checkbox">
                 </div>
 
                 <div class="kd-setting-row">
@@ -391,6 +459,26 @@
                     <div class="credit-role" data-i18n="credits.fontRole">FONT</div>
                     <div class="credit-name">VCR OSD Mono</div>
                 </div>
+
+                <div class="credit-card">
+                    <div class="credit-role music-credit-role">MUSIC</div>
+                    <div class="credit-name">Disturbing Presence (Game Over)<br><span class="credit-detail">Sunday Night Plumbin'</span></div>
+                </div>
+
+                <div class="credit-card">
+                    <div class="credit-role music-credit-role">MUSIC</div>
+                    <div class="credit-name">SHROUDED<br><span class="credit-detail">xX4ce0f$padesXx 1x1x1x1 chase theme — FORSAKEN OST</span></div>
+                </div>
+
+                <div class="credit-card">
+                    <div class="credit-role music-credit-role">MUSIC</div>
+                    <div class="credit-name">Lament<br><span class="credit-detail">Forsaken lobby menu — FORSAKEN OST</span></div>
+                </div>
+
+                <div class="credit-card">
+                    <div class="credit-role story-reference-role">STORY REFERENCE</div>
+                    <div class="credit-name">Murder Drones<br><span class="credit-detail">Glitch Productions</span></div>
+                </div>
             </div>
 
             <button id="credits-back-button" class="menu-button back-button" data-i18n="menu.back">BACK</button>
@@ -417,11 +505,18 @@
                 LOAD
             </h2>
 
+            <div id="save-chapter-filter" class="save-chapter-filter" hidden>
+                <button id="save-chapter-previous" class="carousel-arrow" type="button" aria-label="Previous chapter">‹</button>
+                <span id="save-chapter-name"></span>
+                <button id="save-chapter-next" class="carousel-arrow" type="button" aria-label="Next chapter">›</button>
+            </div>
 
-            <div
-                id="save-slots"
-                class="save-slots"
-            ></div>
+
+            <div class="save-carousel">
+                <button id="save-previous" class="carousel-arrow" type="button" aria-label="Previous save">‹</button>
+                <div id="save-slots" class="save-slots"></div>
+                <button id="save-next" class="carousel-arrow" type="button" aria-label="Next save">›</button>
+            </div>
 
 
             <button
@@ -452,12 +547,63 @@
 
         <div id="background"></div>
 
+        <img
+            id="vignette"
+            src="assets/blur.png"
+            alt=""
+            aria-hidden="true"
+            draggable="false"
+        >
+
+        <!-- SHADER LAYER (Ultra quality dynamic lighting) -->
+        <div id="shader-layer">
+            <canvas id="shader-canvas"></canvas>
+        </div>
+
+        <!-- Inline GLSL keeps Ultra shaders available when opened as a local HTML file. -->
+        <script id="scene-vertex-shader" type="x-shader/x-vertex">
+            attribute vec2 a_position;
+            varying vec2 v_position;
+            void main() {
+                gl_Position = vec4(a_position, 0.0, 1.0);
+                v_position = a_position * 0.5 + 0.5;
+            }
+        </script>
+
+        <script id="scene-fragment-shader" type="x-shader/x-fragment">
+            precision mediump float;
+            uniform vec2 u_mousePosition;
+            uniform float u_lightRadius;
+            uniform float u_time;
+            uniform vec2 u_eyeAlice;
+            uniform vec2 u_eyeZ;
+            uniform float u_eyeRadiusAlice;
+            uniform float u_eyeRadiusZ;
+            uniform float u_aspect;
+            varying vec2 v_position;
+
+            void main() {
+                float d = distance(v_position, u_mousePosition);
+                float light = 1.0 - smoothstep(0.0, u_lightRadius, d);
+                float floorMask = 1.0 - smoothstep(0.28, 0.44, v_position.y);
+                float wave = sin(v_position.x * 34.0 + u_time * 1.4 + sin(v_position.y * 22.0)) * 0.5 + 0.5;
+                float reflection = floorMask * wave * 0.14;
+                float aliceDistance = length((v_position - u_eyeAlice) * vec2(u_aspect, 1.0));
+                float zDistance = length((v_position - u_eyeZ) * vec2(u_aspect, 1.0));
+                float aliceGlow = exp(-aliceDistance * aliceDistance / max(u_eyeRadiusAlice * u_eyeRadiusAlice, 0.00001));
+                float zGlow = exp(-zDistance * zDistance / max(u_eyeRadiusZ * u_eyeRadiusZ, 0.00001));
+                float eyeGlow = max(aliceGlow, zGlow);
+                vec3 color = mix(vec3(reflection * 0.55), vec3(0.08, 1.0, 0.015), eyeGlow * 0.90);
+                float opacity = clamp(0.38 * (1.0 - light) + eyeGlow * 0.50 + reflection * 0.2, 0.0, 0.88);
+                gl_FragColor = vec4(color, opacity);
+            }
+        </script>
 
         <!-- WEATHER -->
 
         <div id="weather"></div>
 
-        <div id="fps-counter" aria-hidden="true">0 FPS</div>
+        
 
 
         <!-- CHARACTERS -->
@@ -477,6 +623,15 @@
                 class="character"
                 alt="Z"
                 draggable="false"
+            >
+
+            <img
+                id="corrode"
+                class="character corrode-character"
+                src="assets/characters/corrode/Corrode001.png"
+                alt="Corrode"
+                draggable="false"
+                style="visibility:hidden;opacity:0"
             >
 
         </div>
@@ -502,6 +657,7 @@
 
         </div>
 
+        <video id="cutscene-video" class="story-cutscene-video" playsinline preload="auto" aria-label="Confronting cutscene"></video>
 
         <!-- VN MENU BUTTON -->
 
@@ -523,6 +679,8 @@
         >
 
             <div class="vn-menu-panel">
+
+                <img class="vn-menu-art" src="assets/images/title/alicenz.png" alt="" aria-hidden="true" draggable="false">
 
                 <div
                     id="vn-menu-title"
@@ -640,21 +798,32 @@
         preload="auto"
     ></audio>
 
+    <audio
+        id="hover-sound"
+        src="assets/audio/sfx/hover.mp3"
+        preload="auto"
+    ></audio>
+
+
+    <audio
+        id="warning-sound"
+        src="assets/audio/music/broadcast.mp3"
+        preload="auto"
+    ></audio>
+
+
+    <audio
+        id="flashlight-sound"
+        src="assets/audio/sfx/flashlight.mp3"
+        preload="auto"
+    ></audio>
+
 
 </div>
 
 <!-- JavaScript principal -->
 <script src="script.js"></script>
 
-<!-- Lua runtime -->
-<script src="https://unpkg.com/fengari-web/dist/fengari-web.js"></script>
-
-<!-- Lua -->
-<script
-    type="application/lua"
-    src="blur.lua"
-></script>
-
-</body>
-
-</html>
+</body> 
+ 
+</html> 

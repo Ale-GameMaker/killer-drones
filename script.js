@@ -4,18 +4,23 @@
    CONFIG
 ========================================================= */
 
-const STORY_PATH = "story/prologue.txt";
+const STORY_PATHS = ["story/prologue.txt", "story/prologue_boss.txt", "story/chapter1.txt", "story/chapter2.txt"];
 const LANGUAGE_KEY = "killer-drones-language";
-const SETTINGS_KEY = "killer-drones-settings";
+const APP_LAYOUT = document.documentElement.dataset.layout === "mobile" ? "mobile" : "pc";
+const SETTINGS_KEY = `killer-drones-settings-${APP_LAYOUT}`;
+const LEGACY_SETTINGS_KEY = "killer-drones-settings";
 const SAVE_PREFIX = "killer-drones-save-";
-
+const LEGACY_SAVE_PREFIX = SAVE_PREFIX;
+const ACHIEVEMENTS_KEY = "killer-drones-achievements";
 const SAVE_VERSION = 4;
 const SAVE_SLOTS = 6;
 
 const DEFAULT_SETTINGS = {
     showFPS: true,
-    quality: "high",
+    quality: APP_LAYOUT === "pc" ? "ultra" : "high",
     effects: true,
+    flashingLights: true,
+    mouseLight: true,
     textSpeed: 25,
     masterVolume: 1,
     musicVolume: 0.35,
@@ -25,13 +30,20 @@ const DEFAULT_SETTINGS = {
 const MUSIC = {
     menu: "assets/audio/music/menu.ogg",
     menu2: "assets/audio/music/menu2.ogg",
-    abandoned_hall: "assets/audio/music/abandoned_hall.ogg"
+    menu3: "assets/audio/music/menu3.ogg",
+    abandoned_hall: "assets/audio/music/abandoned_hall.ogg",
+    lament: "assets/audio/music/lament.mp3",
+    holyDrama: "assets/audio/music/holyDrama.ogg"
 };
 
 const BACKGROUNDS = {
     abandonedHall: "assets/backgrounds/abandonedHall.jpg",
+    moreAbandonedd: "assets/backgrounds/moreAbandonedd.jpg",
+    files: "assets/backgrounds/files.jpg",
+    shards: "assets/backgrounds/shards.webp",
     outside: "assets/backgrounds/outside.jpg"
 };
+const MOUSE_LIT_BACKGROUNDS = new Set(["files"]);
 
 const SPRITES = {
     Alice: {
@@ -39,19 +51,46 @@ const SPRITES = {
         "002": "assets/characters/alice/Alice002.png",
         "003": "assets/characters/alice/Alice003.png",
         "004": "assets/characters/alice/Alice004.png",
-        "005": "assets/characters/alice/Alice005.png"
+        "005": "assets/characters/alice/Alice005.png",
+        "006": "assets/characters/alice/Alice006.png"
     },
     Z: {
         "001": "assets/characters/z/Z001.png",
         "002": "assets/characters/z/Z002.png",
-        "003": "assets/characters/z/Z003.png"
+        "003": "assets/characters/z/Z003.png",
+        "004": "assets/characters/z/Z004.png"
+    },
+    Corrode: {
+        "001": "assets/characters/corrode/Corrode001.png"
     }
 };
 
 const UI_TEXT = {
     en: {
         subtitle: "AN MD AU STORY",
-        start: "START",
+        pressAnyKey: "PRESS ANY KEY TO BEGIN",
+        touchToBegin: "TOUCH THE SCREEN TO BEGIN",
+        playTitle: "PLAY",
+        chapters: "CHAPTERS",
+        achievements: "ACHIEVEMENTS",
+        playChapter: "PLAY CHAPTER",
+        firstSteps: "FIRST STEPS",
+        firstStepsDetail: "Begin the story.",
+        intoTheFiles: "INTO THE FILES",
+        intoTheFilesDetail: "Reach the abandoned files.",
+        chapterComplete: "TO BE CONTINUED",
+        chapterCompleteDetail: "Finish the available chapter.",
+        warningTitle: "SYSTEM WARNING",
+        warningEpilepsyTitle: "FLASHING LIGHTS",
+        warningEpilepsyText: "This game contains intermittent flashing and glitch effects with high contrast. If you are sensitive to flashing lights, you can disable them below or in Settings. Stop playing if you feel unwell.",
+        warningGraphicsTitle: "GRAPHICS AND PERFORMANCE",
+        warningGraphicsText: "The PC build runs at Ultra quality and may be demanding on weaker computers. The mobile build lets you choose High, Medium, or Low. You can turn the FPS counter on or off in Settings.",
+        warningLanguage: "LANGUAGE",
+        warningPrompt: "Disable flashing lights? [Y/N]",
+        warningInputLabel: "Type Y to disable flashing lights or N to keep them on",
+        flashingLights: "FLASHING LIGHTS",
+        mouseLight: "MOUSE LIGHT (L)",
+        start: "PLAY",
         continue: "CONTINUE",
         load: "LOAD",
         settings: "SETTINGS",
@@ -59,10 +98,13 @@ const UI_TEXT = {
         back: "BACK",
         settingsTitle: "SETTINGS",
         creditsTitle: "CREDITS",
+        finalCreditsTitle: "FINAL CREDITS",
         creatorRole: "CREATOR / DEVELOPER",
         projectRole: "PROJECT",
         techRole: "TECHNOLOGY",
         fontRole: "FONT",
+        musicRole: "MUSIC",
+        storyReferenceRole: "STORY REFERENCE",
         resetSettings: "RESET SETTINGS",
         language: "LANGUAGE",
         menu: "MENU",
@@ -95,6 +137,7 @@ const UI_TEXT = {
         low: "LOW",
         medium: "MEDIUM",
         high: "HIGH",
+        ultra: "ULTRA",
         off: "OFF",
         on: "ON",
         fast: "FAST",
@@ -110,7 +153,29 @@ const UI_TEXT = {
     },
     "pt-BR": {
         subtitle: "UMA HISTÓRIA AU DE MD",
-        start: "INICIAR",
+        pressAnyKey: "APERTE QUALQUER TECLA PARA COMEÇAR",
+        touchToBegin: "TOQUE NA TELA PARA COMEÇAR",
+        playTitle: "JOGAR",
+        chapters: "CAPÍTULOS",
+        achievements: "CONQUISTAS",
+        playChapter: "JOGAR CAPÍTULO",
+        firstSteps: "PRIMEIROS PASSOS",
+        firstStepsDetail: "Comece a história.",
+        intoTheFiles: "RUMO AOS ARQUIVOS",
+        intoTheFilesDetail: "Chegue aos arquivos abandonados.",
+        chapterComplete: "CONTINUA...",
+        chapterCompleteDetail: "Termine o capítulo disponível.",
+        warningTitle: "AVISO DO SISTEMA",
+        warningEpilepsyTitle: "LUZES PISCANTES",
+        warningEpilepsyText: "O jogo tem efeitos ocasionais de luzes piscantes e glitch com alto contraste. Se você tem sensibilidade a luzes piscantes, pode desativá-las abaixo ou nas opções. Pare de jogar se sentir mal-estar.",
+        warningGraphicsTitle: "GRÁFICOS E DESEMPENHO",
+        warningGraphicsText: "A versão de PC roda em qualidade Ultra e pode pesar em computadores mais fracos. Na versão mobile, você pode escolher High, Medium ou Low. Nas opções, também dá para ligar ou desligar o contador de FPS.",
+        warningLanguage: "IDIOMA",
+        warningPrompt: "Desativar luzes piscantes? [Y/N]",
+        warningInputLabel: "Digite Y para desativar as luzes ou N para mantê-las",
+        flashingLights: "LUZES PISCANTES",
+        mouseLight: "LUZ DO MOUSE (L)",
+        start: "JOGAR",
         continue: "CONTINUAR",
         load: "CARREGAR",
         settings: "CONFIGURAÇÕES",
@@ -118,10 +183,13 @@ const UI_TEXT = {
         back: "VOLTAR",
         settingsTitle: "CONFIGURAÇÕES",
         creditsTitle: "CRÉDITOS",
+        finalCreditsTitle: "CRÉDITOS FINAIS",
         creatorRole: "CRIADOR / DESENVOLVEDOR",
         projectRole: "PROJETO",
         techRole: "TECNOLOGIA",
         fontRole: "FONTE",
+        musicRole: "MÚSICA",
+        storyReferenceRole: "REFERÊNCIA DA HISTÓRIA",
         resetSettings: "REDEFINIR CONFIGURAÇÕES",
         language: "IDIOMA",
         menu: "MENU",
@@ -154,6 +222,7 @@ const UI_TEXT = {
         low: "BAIXA",
         medium: "MÉDIA",
         high: "ALTA",
+        ultra: "ULTRA",
         off: "DESLIGADO",
         on: "LIGADO",
         fast: "RÁPIDA",
@@ -169,7 +238,29 @@ const UI_TEXT = {
     },
     "es-419": {
         subtitle: "UNA HISTORIA AU DE MD",
-        start: "INICIAR",
+        pressAnyKey: "PRESIONA CUALQUIER TECLA PARA EMPEZAR",
+        touchToBegin: "TOCA LA PANTALLA PARA EMPEZAR",
+        playTitle: "JUGAR",
+        chapters: "CAPÍTULOS",
+        achievements: "LOGROS",
+        playChapter: "JUGAR CAPÍTULO",
+        firstSteps: "PRIMEROS PASOS",
+        firstStepsDetail: "Empieza la historia.",
+        intoTheFiles: "RUMBO A LOS ARCHIVOS",
+        intoTheFilesDetail: "Llega a los archivos abandonados.",
+        chapterComplete: "CONTINUARÁ",
+        chapterCompleteDetail: "Termina el capítulo disponible.",
+        warningTitle: "AVISO DEL SISTEMA",
+        warningEpilepsyTitle: "LUCES INTERMITENTES",
+        warningEpilepsyText: "El juego contiene efectos ocasionales de luces intermitentes y glitch con alto contraste. Si eres sensible a las luces intermitentes, puedes desactivarlas abajo o en Configuración. Deja de jugar si te sientes mal.",
+        warningGraphicsTitle: "GRÁFICOS Y RENDIMIENTO",
+        warningGraphicsText: "La versión de PC funciona con calidad Ultra y puede exigir mucho a equipos menos potentes. En la versión móvil puedes elegir High, Medium o Low. También puedes activar o desactivar el contador de FPS en Configuración.",
+        warningLanguage: "IDIOMA",
+        warningPrompt: "¿Desactivar las luces intermitentes? [Y/N]",
+        warningInputLabel: "Escribe Y para desactivar las luces o N para mantenerlas",
+        flashingLights: "LUCES INTERMITENTES",
+        mouseLight: "LUZ DEL MOUSE (L)",
+        start: "JUGAR",
         continue: "CONTINUAR",
         load: "CARGAR",
         settings: "CONFIGURACIÓN",
@@ -177,10 +268,13 @@ const UI_TEXT = {
         back: "VOLVER",
         settingsTitle: "CONFIGURACIÓN",
         creditsTitle: "CRÉDITOS",
+        finalCreditsTitle: "CRÉDITOS FINALES",
         creatorRole: "CREADOR / DESARROLLADOR",
         projectRole: "PROYECTO",
         techRole: "TECNOLOGÍA",
         fontRole: "FUENTE",
+        musicRole: "MÚSICA",
+        storyReferenceRole: "REFERENCIA DE LA HISTORIA",
         resetSettings: "RESTABLECER CONFIGURACIÓN",
         language: "IDIOMA",
         menu: "MENÚ",
@@ -213,6 +307,7 @@ const UI_TEXT = {
         low: "BAJA",
         medium: "MEDIA",
         high: "ALTA",
+        ultra: "ULTRA",
         off: "DESACTIVADO",
         on: "ACTIVADO",
         fast: "RÁPIDA",
@@ -250,11 +345,18 @@ let currentMusicName = null;
 
 let storyStarted = false;
 let chapterFinished = false;
+let cinematicPlaying = false;
+let titleIntroDismissed = false;
 let activeSaveSlot = null;
 let choiceHistory = {};
+let availableChapters = [];
+let selectedChapterIndex = 0;
+let saveCarouselIndex = 1;
+let saveChapterCarouselIndex = 0;
 
 let saveMode = "load";
 let saveReturnTo = "title";
+let saveChapterScope = "Prologue";
 let vnMenuOpen = false;
 
 let isTyping = false;
@@ -264,6 +366,8 @@ let typewriterToken = 0;
 let initialized = false;
 let menu2Music = null;
 let menu2Available = false;
+let menu3Music = null;
+let finalCreditsOpen = false;
 
 let fpsFrames = 0;
 let fpsLastTime = performance.now();
@@ -302,15 +406,20 @@ function safeRemoveLocalStorage(key) {
 }
 
 function loadSettings() {
-    const raw = safeGetLocalStorage(SETTINGS_KEY);
+    const layoutSettings = safeGetLocalStorage(SETTINGS_KEY);
+    const raw = layoutSettings || safeGetLocalStorage(LEGACY_SETTINGS_KEY);
     if (!raw) return { ...DEFAULT_SETTINGS };
 
     try {
         const parsed = JSON.parse(raw);
-        return {
+        const loaded = {
             ...DEFAULT_SETTINGS,
             ...(parsed && typeof parsed === "object" ? parsed : {})
         };
+        if (!layoutSettings && APP_LAYOUT === "mobile" && loaded.quality === "ultra") {
+            loaded.quality = "high";
+        }
+        return loaded;
     } catch (_) {
         return { ...DEFAULT_SETTINGS };
     }
@@ -333,11 +442,13 @@ function getUI() {
 }
 
 function normalizeSettings() {
-    if (!["low", "medium", "high"].includes(settings.quality)) {
-        settings.quality = "high";
+    if (!["low", "medium", "high", "ultra"].includes(settings.quality)) {
+        settings.quality = APP_LAYOUT === "pc" ? "ultra" : "high";
     }
 
     settings.effects = Boolean(settings.effects);
+    settings.flashingLights = Boolean(settings.flashingLights);
+    settings.mouseLight = Boolean(settings.mouseLight);
     settings.showFPS = Boolean(settings.showFPS);
 
     settings.textSpeed = clamp(Number(settings.textSpeed) || 25, 5, 80);
@@ -353,8 +464,16 @@ function normalizeSettings() {
 function cacheDOM() {
     const ids = [
         "loading-screen", "loading-progress", "loading-percent",
-        "title-screen", "game-subtitle", "start-button", "continue-button",
+        "warning-screen", "warning-title", "warning-epilepsy-title",
+        "warning-epilepsy-text", "warning-graphics-title",
+        "warning-graphics-text", "warning-language-label", "warning-prompt",
+        "warning-command-input",
+        "title-screen", "game-subtitle", "title-start-prompt", "start-button", "continue-button",
         "load-title-button", "settings-button", "credits-button",
+
+        "play-screen", "play-title", "chapters-tab", "achievements-tab",
+        "chapters-panel", "achievements-panel", "chapter-card", "chapter-previous",
+        "chapter-next", "play-chapter-button", "play-back-button", "achievement-list",
 
         "settings-screen", "credits-screen", "credits-title", "credits-back-button",
         "settings-reset-button",
@@ -362,22 +481,24 @@ function cacheDOM() {
         "settings-back-button",
 
         "settings-fps", "settings-quality", "settings-effects",
+        "settings-flashing-lights", "settings-mouse-light",
         "settings-text-speed", "settings-volume", "settings-music-volume",
         "settings-sfx-volume",
 
         "fps-counter",
 
-        "save-screen", "save-screen-title", "save-slots",
+        "save-screen", "save-screen-title", "save-slots", "save-previous", "save-next",
+        "save-chapter-filter", "save-chapter-name", "save-chapter-previous", "save-chapter-next",
         "save-back-button", "delete-all-saves-button",
 
-        "story-screen", "background", "weather", "characters",
-        "alice", "z", "dialogue-box", "speaker", "dialogue-text",
+        "story-screen", "background", "weather", "characters", "cutscene-video",
+        "alice", "z", "corrode", "dialogue-box", "speaker", "dialogue-text",
         "next-button", "vn-menu-button", "vn-menu", "vn-menu-title",
         "vn-continue", "vn-back-line", "vn-save", "vn-load",
         "vn-back-menu", "vn-close", "choice-container",
 
         "menu-music", "menu2-music", "story-music",
-        "text-sound", "button-sound", "vignette"
+        "text-sound", "button-sound", "hover-sound", "warning-sound", "flashlight-sound", "vignette"
     ];
 
     for (const id of ids) {
@@ -395,9 +516,22 @@ function cacheDOM() {
 }
 
 function showScreen(screen) {
+    if (
+        dom.warningScreen?.classList.contains("active") &&
+        screen !== dom.warningScreen &&
+        dom.warningSound
+    ) {
+        safePause(dom.warningSound);
+        dom.warningSound.currentTime = 0;
+        dom.warningSound.dataset.pending = "0";
+        dom.warningSound.dataset.started = "0";
+    }
+
     const screens = [
         dom.loadingScreen,
+        dom.warningScreen,
         dom.titleScreen,
+        dom.playScreen,
         dom.settingsScreen,
         dom.creditsScreen,
         dom.saveScreen,
@@ -409,6 +543,135 @@ function showScreen(screen) {
     }
 
     if (screen) screen.classList.add("active");
+    if (dom.fpsCounter) {
+        const visibleMenu = Boolean(screen && screen !== dom.loadingScreen && screen !== dom.warningScreen);
+        dom.fpsCounter.style.display = settings.showFPS && visibleMenu ? "block" : "none";
+    }
+}
+
+function dismissTitleIntro() {
+    if (titleIntroDismissed || !dom.titleScreen?.classList.contains("active")) return;
+    requestGameFullscreen();
+    titleIntroDismissed = true;
+    dom.titleScreen.classList.remove("title-gated");
+    playButtonSound();
+}
+
+function requestGameFullscreen() {
+    if (document.fullscreenElement) return;
+    const root = document.documentElement;
+    const request = root.requestFullscreen || root.webkitRequestFullscreen || root.msRequestFullscreen;
+    if (typeof request !== "function") return;
+    try {
+        const result = request === root.requestFullscreen
+            ? request.call(root, { navigationUI: "hide" })
+            : request.call(root);
+        result?.catch?.(() => {});
+    } catch (_) {}
+}
+
+function getAvailableChapters() {
+    const chapters = (storyLines.chapters || []).map(chapter => ({ ...chapter }));
+    storyLines.forEach((line, index) => {
+        const title = line.chapter || "Prologue";
+        const existing = chapters.find(chapter => chapter.title === title);
+        if (!existing) {
+            chapters.push({ title, startLine: index, background: line.background, ready: true });
+        } else if (!existing.ready) {
+            existing.startLine = index;
+            existing.background = line.background;
+            existing.ready = true;
+        }
+    });
+    return chapters;
+}
+
+function renderChapterCarousel() {
+    if (!dom.chapterCard) return;
+    availableChapters = getAvailableChapters();
+    if (!availableChapters.length) return;
+    selectedChapterIndex = (selectedChapterIndex + availableChapters.length) % availableChapters.length;
+    const chapter = availableChapters[selectedChapterIndex];
+    const background = BACKGROUNDS[chapter.banner || chapter.background] || BACKGROUNDS.abandonedHall;
+    dom.chapterCard.classList.remove("carousel-arrive");
+    void dom.chapterCard.offsetWidth;
+    dom.chapterCard.classList.add("carousel-arrive");
+    dom.chapterCard.textContent = "";
+    dom.chapterCard.style.backgroundImage = `linear-gradient(rgba(0,0,0,.38), rgba(0,0,0,.88)), url("${background}")`;
+    const index = document.createElement("span");
+    index.className = "chapter-index";
+    index.textContent = `${String(selectedChapterIndex + 1).padStart(2, "0")} / ${String(availableChapters.length).padStart(2, "0")}`;
+    const title = document.createElement("h3");
+    title.textContent = chapter.title;
+    const status = document.createElement("p");
+    status.textContent = chapter.ready
+        ? (currentLanguage === "pt-BR" ? "CAPÍTULO DISPONÍVEL" : currentLanguage === "es-419" ? "CAPÍTULO DISPONIBLE" : "CHAPTER AVAILABLE")
+        : (currentLanguage === "pt-BR" ? "AGUARDANDO HISTÓRIA" : currentLanguage === "es-419" ? "ESPERANDO LA HISTORIA" : "STORY NOT WRITTEN YET");
+    if (dom.playChapterButton) {
+        dom.playChapterButton.disabled = !chapter.ready;
+        dom.playChapterButton.setAttribute("aria-disabled", String(!chapter.ready));
+    }
+    dom.chapterCard.append(index, title, status);
+}
+
+function getUnlockedAchievements() {
+    try {
+        const parsed = JSON.parse(safeGetLocalStorage(ACHIEVEMENTS_KEY) || "{}");
+        return parsed && typeof parsed === "object" ? parsed : {};
+    } catch (_) {
+        return {};
+    }
+}
+
+function unlockAchievement(id) {
+    const unlocked = getUnlockedAchievements();
+    if (unlocked[id]) return;
+    unlocked[id] = Date.now();
+    safeSetLocalStorage(ACHIEVEMENTS_KEY, JSON.stringify(unlocked));
+    renderAchievements();
+}
+
+function renderAchievements() {
+    if (!dom.achievementList) return;
+    const ui = getUI();
+    const unlocked = getUnlockedAchievements();
+    const definitions = [
+        ["firstSteps", ui.firstSteps, ui.firstStepsDetail],
+        ["intoTheFiles", ui.intoTheFiles, ui.intoTheFilesDetail],
+        ["chapterComplete", ui.chapterComplete, ui.chapterCompleteDetail]
+    ];
+    dom.achievementList.textContent = "";
+    for (const [id, titleText, detailText] of definitions) {
+        const item = document.createElement("article");
+        item.className = `achievement-card${unlocked[id] ? " unlocked" : " locked"}`;
+        const icon = document.createElement("span");
+        icon.className = "achievement-icon";
+        icon.textContent = unlocked[id] ? "◆" : "◇";
+        const title = document.createElement("h3");
+        title.textContent = unlocked[id] ? titleText : "???";
+        const detail = document.createElement("p");
+        detail.textContent = unlocked[id] ? detailText : "????????????????";
+        item.append(icon, title, detail);
+        dom.achievementList.appendChild(item);
+    }
+}
+
+async function openPlayScreen() {
+    playButtonSound();
+    if (!storyLoaded) await loadStory();
+    renderChapterCarousel();
+    renderAchievements();
+    showScreen(dom.playScreen);
+    await transitionToSubmenuMusic();
+}
+
+function showPlayTab(tab) {
+    const achievements = tab === "achievements";
+    dom.chaptersPanel?.toggleAttribute("hidden", achievements);
+    dom.achievementsPanel?.toggleAttribute("hidden", !achievements);
+    dom.chaptersTab?.classList.toggle("active", !achievements);
+    dom.achievementsTab?.classList.toggle("active", achievements);
+    if (achievements) renderAchievements();
 }
 
 /* =========================================================
@@ -423,6 +686,21 @@ function updateUI() {
     };
 
     setText(dom.gameSubtitle, ui.subtitle);
+    setText(dom.titleStartPrompt, APP_LAYOUT === "mobile" ? ui.touchToBegin : ui.pressAnyKey);
+    setText(dom.playTitle, ui.playTitle);
+    setText(dom.chaptersTab, ui.chapters);
+    setText(dom.achievementsTab, ui.achievements);
+    setText(dom.playChapterButton, ui.playChapter);
+    setText(dom.warningTitle, ui.warningTitle);
+    setText(dom.warningEpilepsyTitle, ui.warningEpilepsyTitle);
+    setText(dom.warningEpilepsyText, ui.warningEpilepsyText);
+    setText(dom.warningGraphicsTitle, ui.warningGraphicsTitle);
+    setText(dom.warningGraphicsText, ui.warningGraphicsText);
+    setText(dom.warningLanguageLabel, ui.warningLanguage);
+    setText(dom.warningPrompt, ui.warningPrompt);
+    if (dom.warningCommandInput) {
+        dom.warningCommandInput.setAttribute("aria-label", ui.warningInputLabel);
+    }
     setText(dom.startButton, ui.start);
     setText(dom.continueButton, ui.continue);
     setText(dom.loadTitleButton, ui.load);
@@ -430,7 +708,13 @@ function updateUI() {
     setText(dom.creditsButton, ui.credits);
 
     setText(dom.settingsTitle, ui.settingsTitle);
-    setText(dom.creditsTitle, ui.creditsTitle);
+    setText(dom.creditsTitle, finalCreditsOpen ? ui.finalCreditsTitle : ui.creditsTitle);
+    document.querySelectorAll(".music-credit-role").forEach(element => {
+        element.textContent = ui.musicRole;
+    });
+    document.querySelectorAll(".story-reference-role").forEach(element => {
+        element.textContent = ui.storyReferenceRole;
+    });
     setText(dom.settingsLanguageLabel, ui.language);
     setText(dom.settingsBackButton, ui.back);
 
@@ -463,6 +747,16 @@ function updateUI() {
     if (dom.settingsEffects) {
         dom.settingsEffects.parentElement?.querySelector(".setting-label") &&
             (dom.settingsEffects.parentElement.querySelector(".setting-label").textContent = ui.effects);
+    }
+
+    if (dom.settingsFlashingLights) {
+        dom.settingsFlashingLights.parentElement?.querySelector(".setting-label") &&
+            (dom.settingsFlashingLights.parentElement.querySelector(".setting-label").textContent = ui.flashingLights);
+    }
+
+    if (dom.settingsMouseLight) {
+        dom.settingsMouseLight.parentElement?.querySelector(".setting-label") &&
+            (dom.settingsMouseLight.parentElement.querySelector(".setting-label").textContent = ui.mouseLight);
     }
 
     if (dom.settingsTextSpeed) {
@@ -508,10 +802,22 @@ function updateLanguageButtons() {
 function updateSettingsUI() {
     normalizeSettings();
 
-    if (dom.settingsFps) dom.settingsFps.checked = settings.showFPS;
+    if (dom.settingsFps) {
+        dom.settingsFps.checked = settings.showFPS;
+        dom.settingsFps.disabled = false;
+    }
     if (dom.settingsEffects) dom.settingsEffects.checked = settings.effects;
+    if (dom.settingsFlashingLights) dom.settingsFlashingLights.checked = settings.flashingLights;
+    if (dom.settingsMouseLight) {
+        dom.settingsMouseLight.checked = settings.mouseLight && mouseLightingAvailable;
+        dom.settingsMouseLight.disabled = !mouseLightingAvailable;
+    }
 
-    if (dom.settingsQuality) dom.settingsQuality.value = settings.quality;
+    if (dom.settingsQuality) {
+        dom.settingsQuality.value = settings.quality;
+        dom.settingsQuality.disabled = false;
+    }
+    if (dom.settingsEffects) dom.settingsEffects.disabled = false;
     if (dom.settingsTextSpeed) dom.settingsTextSpeed.value = String(settings.textSpeed);
     if (dom.settingsVolume) dom.settingsVolume.value = String(settings.masterVolume);
     if (dom.settingsMusicVolume) dom.settingsMusicVolume.value = String(settings.musicVolume);
@@ -529,12 +835,15 @@ function updateSettingsUI() {
 
     document.documentElement.dataset.quality = settings.quality;
     document.documentElement.dataset.effects = settings.effects ? "on" : "off";
+    document.documentElement.dataset.flashingLights = settings.flashingLights ? "on" : "off";
+    document.documentElement.dataset.mouseLight = settings.mouseLight ? "on" : "off";
 
     if (dom.fpsCounter) {
-        dom.fpsCounter.style.display = settings.showFPS ? "" : "none";
+        updateFPSVisibility();
     }
 
     applyAudioVolumes();
+    updateShaderQuality();
 }
 
 /* =========================================================
@@ -628,6 +937,14 @@ function applyAudioVolumes() {
         );
     }
 
+    if (menu3Music) {
+        menu3Music.volume = clamp(
+            menu3Music.dataset.playing === "1" ? getMasterMusicVolume() : 0,
+            0,
+            1
+        );
+    }
+
     if (dom.storyMusic) {
         dom.storyMusic.volume = clamp(
             dom.storyMusic.dataset.playing === "1"
@@ -640,6 +957,9 @@ function applyAudioVolumes() {
 
     if (dom.textSound) dom.textSound.volume = getSFXVolume();
     if (dom.buttonSound) dom.buttonSound.volume = getSFXVolume();
+    if (dom.hoverSound) dom.hoverSound.volume = getSFXVolume();
+    if (dom.warningSound) dom.warningSound.volume = getSFXVolume();
+    if (dom.flashlightSound) dom.flashlightSound.volume = getSFXVolume();
 }
 
 function safePlay(audio) {
@@ -660,6 +980,38 @@ function safePause(audio) {
     try {
         audio.pause();
     } catch (_) {}
+}
+
+function playFlashlightSound() {
+    if (!dom.flashlightSound) return;
+    dom.flashlightSound.currentTime = 0;
+    dom.flashlightSound.volume = getSFXVolume();
+    safePlay(dom.flashlightSound);
+}
+
+function playWarningBroadcast() {
+    const audio = dom.warningSound;
+    if (!audio || audio.dataset.started === "1" || audio.dataset.pending === "1") return;
+
+    audio.volume = getSFXVolume();
+    audio.currentTime = 0;
+    audio.dataset.pending = "1";
+    try {
+        const playback = audio.play();
+        if (playback && typeof playback.then === "function") {
+            playback.then(() => {
+                audio.dataset.pending = "0";
+                audio.dataset.started = "1";
+            }).catch(() => {
+                audio.dataset.pending = "0";
+            });
+        } else {
+            audio.dataset.pending = "0";
+            audio.dataset.started = "1";
+        }
+    } catch (_) {
+        audio.dataset.pending = "0";
+    }
 }
 
 function fadeAudio(audio, targetVolume, duration = 450) {
@@ -737,8 +1089,23 @@ function createMenu2Audio() {
     return menu2Music;
 }
 
+function createMenu3Audio() {
+    if (menu3Music) return menu3Music;
+    menu3Music = new Audio(MUSIC.menu3);
+    menu3Music.loop = true;
+    menu3Music.preload = "auto";
+    menu3Music.volume = 0;
+    menu3Music.dataset.playing = "0";
+    return menu3Music;
+}
+
 async function startMenuMusic() {
     if (!dom.menuMusic) return;
+
+    createMenu3Audio();
+    menu3Music.dataset.playing = "0";
+    await fadeAudio(menu3Music, 0, 250);
+    safePause(menu3Music);
 
     dom.menuMusic.loop = true;
     dom.menuMusic.dataset.playing = "1";
@@ -758,47 +1125,65 @@ async function stopMenuMusic() {
 
 async function transitionToSubmenuMusic() {
     createMenu2Audio();
+    createMenu3Audio();
 
     if (!menu2Available) {
+        menu3Music.dataset.playing = "0";
+        await fadeAudio(menu3Music, 0, 300);
+        safePause(menu3Music);
         return;
     }
 
     safePlay(dom.menuMusic);
     safePlay(menu2Music);
+    menu3Music.dataset.playing = "0";
 
     dom.menuMusic.dataset.playing = "0";
     menu2Music.dataset.playing = "1";
 
     await Promise.all([
         fadeAudio(dom.menuMusic, 0, 450),
-        fadeAudio(menu2Music, getMasterMusicVolume(), 450)
+        fadeAudio(menu2Music, getMasterMusicVolume(), 450),
+        fadeAudio(menu3Music, 0, 300)
     ]);
 
     safePause(dom.menuMusic);
+    safePause(menu3Music);
+}
+
+async function transitionToStartMenuMusic() {
+    createMenu2Audio();
+    createMenu3Audio();
+    safePlay(menu3Music);
+    menu3Music.dataset.playing = "1";
+    dom.menuMusic.dataset.playing = "0";
+    if (menu2Music) menu2Music.dataset.playing = "0";
+    await Promise.all([
+        fadeAudio(dom.menuMusic, 0, 400),
+        fadeAudio(menu2Music, 0, 400),
+        fadeAudio(menu3Music, getMasterMusicVolume(), 400)
+    ]);
+    safePause(dom.menuMusic);
+    safePause(menu2Music);
 }
 
 async function transitionToMainMenuMusic() {
     createMenu2Audio();
+    createMenu3Audio();
 
     safePlay(dom.menuMusic);
     dom.menuMusic.dataset.playing = "1";
 
-    if (!menu2Available) {
-        await fadeAudio(
-            dom.menuMusic,
-            getMasterMusicVolume(),
-            350
-        );
-        return;
-    }
-
+    if (menu2Music) menu2Music.dataset.playing = "0";
+    menu3Music.dataset.playing = "0";
     await Promise.all([
         fadeAudio(menu2Music, 0, 450),
+        fadeAudio(menu3Music, 0, 450),
         fadeAudio(dom.menuMusic, getMasterMusicVolume(), 450)
     ]);
 
-    menu2Music.dataset.playing = "0";
     safePause(menu2Music);
+    safePause(menu3Music);
 }
 
 async function playStoryMusic(
@@ -844,6 +1229,8 @@ async function playStoryMusic(
     safePlay(dom.storyMusic);
 
     const menuFade = fadeAudio(dom.menuMusic, 0, 500);
+    if (menu3Music) menu3Music.dataset.playing = "0";
+    const menu3Fade = fadeAudio(menu3Music, 0, 450);
 
     if (fromMenu2 && menu2Available) {
         dom.menuMusic.dataset.playing = "0";
@@ -851,6 +1238,7 @@ async function playStoryMusic(
 
         await Promise.all([
             menuFade,
+            menu3Fade,
             fadeAudio(menu2Music, 0, 500),
             fadeAudio(
                 dom.storyMusic,
@@ -866,6 +1254,7 @@ async function playStoryMusic(
 
         await Promise.all([
             menuFade,
+            menu3Fade,
             fadeAudio(
                 dom.storyMusic,
                 getMasterMusicVolume(),
@@ -875,6 +1264,7 @@ async function playStoryMusic(
 
         safePause(dom.menuMusic);
     }
+    safePause(menu3Music);
 }
 
 async function stopStoryMusic() {
@@ -897,6 +1287,16 @@ function playButtonSound() {
 
         const promise = dom.buttonSound.play();
 
+        if (promise?.catch) promise.catch(() => {});
+    } catch (_) {}
+}
+
+function playHoverSound() {
+    if (!dom.hoverSound) return;
+    try {
+        dom.hoverSound.volume = getSFXVolume();
+        dom.hoverSound.currentTime = 0;
+        const promise = dom.hoverSound.play();
         if (promise?.catch) promise.catch(() => {});
     } catch (_) {}
 }
@@ -937,12 +1337,23 @@ function parseStory(text) {
 
     let currentCharacter = null;
     let currentSprite = "001";
+    let nextDialogueIsAction = false;
 
-    let characterStates = { Alice: "001", Z: "001" };
-    let visibleCharacters = { Alice: true, Z: false };
+    let characterStates = { Alice: "001", Z: "001", Corrode: "001" };
+    let visibleCharacters = { Alice: true, Z: false, Corrode: false };
 
     let activeChoice = null;
     let activeOption = null;
+    const chapters = [];
+
+    function registerChapter(title) {
+        let entry = chapters.find(item => item.title === title);
+        if (!entry) {
+            entry = { title, startLine: null, background: background || "abandonedHall", ready: false };
+            chapters.push(entry);
+        }
+        return entry;
+    }
 
     const clone = value => JSON.parse(JSON.stringify(value));
 
@@ -960,7 +1371,15 @@ function parseStory(text) {
         flushLanguage();
         language = null;
         if (!currentDialogue) return;
-        if (Object.keys(currentDialogue.texts).length > 0) lines.push(currentDialogue);
+        if (Object.keys(currentDialogue.texts).length > 0) {
+            const chapterEntry = registerChapter(currentDialogue.chapter || chapter);
+            if (chapterEntry.startLine === null) {
+                chapterEntry.startLine = lines.length;
+                chapterEntry.background = currentDialogue.background || chapterEntry.background;
+                chapterEntry.ready = true;
+            }
+            lines.push(currentDialogue);
+        }
         currentDialogue = null;
     }
 
@@ -987,7 +1406,15 @@ function parseStory(text) {
     function finishChoice() {
         finishOption();
         if (!activeChoice) return;
-        if (activeChoice.options.length > 0) lines.push(activeChoice);
+        if (activeChoice.options.length > 0) {
+            const chapterEntry = registerChapter(activeChoice.chapter || chapter);
+            if (chapterEntry.startLine === null) {
+                chapterEntry.startLine = lines.length;
+                chapterEntry.background = activeChoice.background || chapterEntry.background;
+                chapterEntry.ready = true;
+            }
+            lines.push(activeChoice);
+        }
         activeChoice = null;
     }
 
@@ -1096,6 +1523,13 @@ function parseStory(text) {
             continue;
         }
 
+        if (/^@endbranch$/i.test(line)) {
+            flushDialogue();
+            const branchEnd = lines[lines.length - 1];
+            if (branchEnd?.type === "dialogue") branchEnd.endBranch = true;
+            continue;
+        }
+
         const labelMatch = line.match(/^@label\s+(.+)$/i);
         if (labelMatch) {
             flushDialogue();
@@ -1107,7 +1541,12 @@ function parseStory(text) {
 
         if (line.startsWith("#")) {
             const chapterMatch = line.match(/^#\s*Chapter:\s*(.+)$/i);
-            if (chapterMatch) chapter = chapterMatch[1].trim();
+            if (chapterMatch) {
+                chapter = chapterMatch[1].trim();
+                registerChapter(chapter);
+            }
+            const bannerMatch = line.match(/^#\s*Banner:\s*(.+)$/i);
+            if (bannerMatch) registerChapter(chapter).banner = bannerMatch[1].trim();
             continue;
         }
 
@@ -1129,6 +1568,41 @@ function parseStory(text) {
             continue;
         }
 
+        if (/^@action$/i.test(line)) {
+            flushDialogue();
+            currentCharacter = "";
+            nextDialogueIsAction = true;
+            continue;
+        }
+
+        if (line.startsWith("@cutscene")) {
+            flushDialogue();
+            const cutscene = line.replace(/^@cutscene/i, "").trim();
+            const previous = lines[lines.length - 1];
+            if (cutscene && previous?.type === "dialogue") previous.cutscene = cutscene;
+            continue;
+        }
+
+        const hideMatch = line.match(/^@hide\s+(.+)$/i);
+        if (hideMatch) {
+            flushDialogue();
+            const target = hideMatch[1].trim();
+            if (target.toLowerCase() === "all") {
+                for (const characterName of Object.keys(visibleCharacters)) visibleCharacters[characterName] = false;
+            } else if (Object.prototype.hasOwnProperty.call(visibleCharacters, target)) {
+                visibleCharacters[target] = false;
+            }
+            continue;
+        }
+
+        const jumpMatch = line.match(/^@jump\s+(.+)$/i);
+        if (jumpMatch) {
+            flushDialogue();
+            const previous = lines[lines.length - 1];
+            if (previous?.type === "dialogue") previous.jumpTarget = jumpMatch[1].trim();
+            continue;
+        }
+
         const characterMatch = line.match(/^(.+?)\s+@sprite\s+(.+)$/i);
         if (characterMatch) {
             const character = characterMatch[1].trim();
@@ -1136,10 +1610,10 @@ function parseStory(text) {
             flushDialogue();
             currentCharacter = character;
             currentSprite = sprite;
+            nextDialogueIsAction = false;
             if (Object.prototype.hasOwnProperty.call(characterStates, character)) {
                 characterStates[character] = sprite;
-                if (character === "Z") visibleCharacters.Z = true;
-                if (character === "Alice") visibleCharacters.Alice = true;
+                visibleCharacters[character] = true;
             }
             continue;
         }
@@ -1155,7 +1629,8 @@ function parseStory(text) {
         const languageStart = line.match(/^\[([^\]/]+)\]$/);
         if (languageStart) {
             if (!currentDialogue) {
-                beginDialogue(currentCharacter || "SYSTEM", currentSprite || "001");
+                beginDialogue(nextDialogueIsAction ? "" : (currentCharacter || "SYSTEM"), currentSprite || "001");
+                nextDialogueIsAction = false;
             }
             flushLanguage();
             language = languageStart[1].trim();
@@ -1175,22 +1650,17 @@ function parseStory(text) {
     finishChoice();
     flushDialogue();
     lines.labels = labels;
+    lines.chapters = chapters;
     return lines;
 }
 
 async function loadStory() {
-    const response = await fetch(
-        `${STORY_PATH}?v=${Date.now()}`,
-        { cache: "no-store" }
-    );
-
-    if (!response.ok) {
-        throw new Error(
-            `Could not load story: ${response.status}`
-        );
-    }
-
-    const text = await response.text();
+    const parts = await Promise.all(STORY_PATHS.map(async path => {
+        const response = await fetch(`${path}?v=${Date.now()}`, { cache: "no-store" });
+        if (!response.ok) throw new Error(`Could not load story ${path}: ${response.status}`);
+        return response.text();
+    }));
+    const text = parts.join("\n");
     const parsed = parseStory(text);
 
     if (!parsed.length) {
@@ -1225,6 +1695,16 @@ function updateBackground(name) {
     currentBackground = name;
     dom.background.style.backgroundImage =
         `url("${src}")`;
+    document.getElementById("story-screen")?.classList.toggle(
+        "mouse-lit-background",
+        MOUSE_LIT_BACKGROUNDS.has(name)
+    );
+    updateBackgroundMouseTarget();
+
+    if (currentWeather === "snow") {
+        dom.weather.textContent = "";
+        if (settings.effects && settings.quality !== "low") createSnow();
+    }
 }
 
 function updateWeather(name) {
@@ -1250,10 +1730,14 @@ function updateWeather(name) {
 function createSnow() {
     if (!dom.weather) return;
 
-    const amount =
+    const baseAmount =
+        settings.quality === "ultra" ? 80 :
         settings.quality === "high" ? 55 :
         settings.quality === "medium" ? 35 :
         18;
+    const amount = MOUSE_LIT_BACKGROUNDS.has(currentBackground)
+        ? Math.max(1, Math.round(baseAmount * 0.4))
+        : baseAmount;
 
     const fragment =
         document.createDocumentFragment();
@@ -1295,6 +1779,10 @@ function createSnow() {
 function setCharacterVisible(element, visible) {
     if (!element) return;
 
+    if (element === dom.corrode && element.dataset.assetMissing === "1") {
+        visible = false;
+    }
+
     element.style.visibility =
         visible ? "visible" : "hidden";
 
@@ -1316,7 +1804,9 @@ function setCharacterSprite(character, sprite) {
     const element =
         character === "Alice"
             ? dom.alice
-            : dom.z;
+            : character === "Z"
+                ? dom.z
+                : dom.corrode;
 
     if (!element) return;
 
@@ -1344,6 +1834,12 @@ function resetCharacters() {
         );
         setCharacterVisible(dom.z, false);
     }
+
+    if (dom.corrode) {
+        setCharacterSprite("Corrode", "001");
+        dom.corrode.classList.remove("corrode-visible", "talking");
+        setCharacterVisible(dom.corrode, false);
+    }
 }
 
 function rebuildCharacterStage(line) {
@@ -1357,6 +1853,7 @@ function rebuildCharacterStage(line) {
 
     const zVisible =
         Boolean(visible.Z);
+    const corrodeVisible = Boolean(visible.Corrode);
 
     setCharacterSprite(
         "Alice",
@@ -1370,7 +1867,7 @@ function rebuildCharacterStage(line) {
 
     dom.alice?.classList.toggle(
         "alice-right",
-        zVisible
+        zVisible && !corrodeVisible
     );
 
     setCharacterSprite(
@@ -1388,8 +1885,13 @@ function rebuildCharacterStage(line) {
         zVisible
     );
 
+    setCharacterSprite("Corrode", states.Corrode || "001");
+    setCharacterVisible(dom.corrode, corrodeVisible);
+    dom.corrode?.classList.toggle("corrode-visible", corrodeVisible);
+
     dom.alice?.classList.remove("talking");
     dom.z?.classList.remove("talking");
+    dom.corrode?.classList.remove("talking");
 
     dom.alice?.classList.toggle(
         "alice-cold",
@@ -1401,6 +1903,8 @@ function rebuildCharacterStage(line) {
         dom.alice?.classList.add("talking");
     } else if (line.character === "Z") {
         dom.z?.classList.add("talking");
+    } else if (line.character === "Corrode") {
+        dom.corrode?.classList.add("talking");
     }
 }
 
@@ -1424,6 +1928,7 @@ function finishTypewriter() {
 
     const line =
         storyLines[currentLine];
+    if (line.background === "files") unlockAchievement("intoTheFiles");
 
     if (dom.dialogueText && line) {
         dom.dialogueText.textContent =
@@ -1625,9 +2130,16 @@ async function renderCurrentLine(
 
     chapterFinished = false;
 
-    if (line.type === "choice") {
-        currentChapter = line.chapter || currentChapter || "Prologue";
+    const lineChapter = line.chapter || currentChapter || "Prologue";
+    if (storyStarted && currentChapter && lineChapter !== currentChapter) {
+        saveChapterScope = lineChapter;
+        const firstEmpty = Array.from({ length: SAVE_SLOTS }, (_, i) => i + 1)
+            .find(slot => !getSaveData(slot, saveChapterScope));
+        activeSaveSlot = firstEmpty || null;
+    }
+    currentChapter = lineChapter;
 
+    if (line.type === "choice") {
         updateBackground(line.background);
         updateWeather(line.weather);
         rebuildCharacterStage(line);
@@ -1639,9 +2151,6 @@ async function renderCurrentLine(
         await renderChoiceLine(line);
         return;
     }
-
-    currentChapter =
-        line.chapter || "Prologue";
 
     updateBackground(line.background);
     updateWeather(line.weather);
@@ -1680,6 +2189,7 @@ async function startStory(lineIndex = 0) {
     if (!storyLines.length) return;
 
     storyStarted = true;
+    unlockAchievement("firstSteps");
     chapterFinished = false;
     choiceHistory = {};
 
@@ -1689,6 +2199,8 @@ async function startStory(lineIndex = 0) {
             0,
             storyLines.length - 1
         );
+
+    currentChapter = storyLines[currentLine]?.chapter || "Prologue";
 
     currentBackground = null;
     currentWeather = null;
@@ -1705,14 +2217,34 @@ async function startStory(lineIndex = 0) {
 }
 
 async function nextLine() {
-    if (!storyStarted || vnMenuOpen) return;
+    if (!storyStarted || vnMenuOpen || cinematicPlaying) return;
 
     if (isTyping) {
         finishTypewriter();
         return;
     }
 
-    if (storyLines[currentLine]?.type === "choice") {
+    const currentStoryLine = storyLines[currentLine];
+    if (currentStoryLine?.cutscene) {
+        await playStoryCutscene(currentStoryLine.cutscene);
+    }
+
+    if (currentStoryLine?.jumpTarget) {
+        const jumpIndex = resolveChoiceTarget(currentStoryLine.jumpTarget);
+        if (jumpIndex >= 0 && jumpIndex < storyLines.length) {
+            currentLine = jumpIndex;
+            await renderCurrentLine({ updateMusic: true });
+            autoCheckpoint();
+            return;
+        }
+    }
+
+    if (currentStoryLine?.type === "choice") {
+        return;
+    }
+
+    if (currentStoryLine?.endBranch) {
+        await showChapterEnd();
         return;
     }
 
@@ -1720,7 +2252,7 @@ async function nextLine() {
         currentLine >=
         storyLines.length - 1
     ) {
-        showChapterEnd();
+        await showChapterEnd();
         return;
     }
 
@@ -1731,6 +2263,41 @@ async function nextLine() {
     });
 
     autoCheckpoint();
+}
+
+async function playStoryCutscene(name) {
+    if (cinematicPlaying) return;
+    const video = dom.cutsceneVideo;
+    const story = dom.storyScreen;
+    if (!video || !story) return;
+
+    cinematicPlaying = true;
+    story.classList.add("cutscene-prep");
+    await new Promise(resolve => window.setTimeout(resolve, 1650));
+
+    video.pause();
+    video.currentTime = 0;
+    video.src = `assets/cutscenes/${name}.mp4`;
+    story.classList.add("cutscene-playing");
+
+    const completed = await new Promise(resolve => {
+        const finish = result => {
+            video.removeEventListener("ended", onEnded);
+            video.removeEventListener("error", onError);
+            resolve(result);
+        };
+        const onEnded = () => finish(true);
+        const onError = () => finish(false);
+        video.addEventListener("ended", onEnded, { once: true });
+        video.addEventListener("error", onError, { once: true });
+        video.load();
+        video.play().catch(onError);
+    });
+
+    video.pause();
+    story.classList.remove("cutscene-playing", "cutscene-prep");
+    cinematicPlaying = false;
+    if (!completed) console.error(`[Killer Drones] Could not play cutscene: ${name}.mp4`);
 }
 
 async function previousLine() {
@@ -1750,11 +2317,23 @@ async function previousLine() {
     });
 }
 
-function showChapterEnd() {
+async function showChapterEnd() {
     if (chapterFinished) return;
 
     chapterFinished = true;
+    unlockAchievement("chapterComplete");
     stopTypewriter();
+
+    if (String(currentChapter).toLowerCase() === "chapter 1") {
+        finalCreditsOpen = true;
+        updateUI();
+        autoCheckpoint();
+        document.getElementById("credits-screen")?.classList.add("final-credits");
+        showScreen(dom.creditsScreen);
+        void stopStoryMusic();
+        await new Promise(resolve => window.setTimeout(resolve, 1500));
+        return;
+    }
 
     const ui = getUI();
 
@@ -1805,48 +2384,33 @@ async function setLanguage(language) {
    SAVE / LOAD / DELETE
 ========================================================= */
 
-function getSaveKey(slot) {
-    return `${SAVE_PREFIX}${slot}`;
+function getSaveScopeId(chapter = saveChapterScope) {
+    return String(chapter || "Prologue").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
-function getSaveData(slot) {
-    const raw =
-        safeGetLocalStorage(
-            getSaveKey(slot)
-        );
+function getSaveKey(slot, chapter = saveChapterScope) {
+    return `${SAVE_PREFIX}${getSaveScopeId(chapter)}-${slot}`;
+}
 
+function parseSaveData(raw) {
     if (!raw) return null;
-
     try {
-        const data =
-            JSON.parse(raw);
-
-        if (
-            !data ||
-            typeof data !== "object"
-        ) {
-            return null;
-        }
-
-        if (
-            !Number.isInteger(
-                Number(data.line)
-            )
-        ) {
-            return null;
-        }
-
-        if (
-            data.version &&
-            Number(data.version) > SAVE_VERSION
-        ) {
-            return null;
-        }
-
+        const data = JSON.parse(raw);
+        if (!data || typeof data !== "object" || !Number.isInteger(Number(data.line))) return null;
+        if (data.version && Number(data.version) > SAVE_VERSION) return null;
         return data;
     } catch (_) {
         return null;
     }
+}
+
+function getSaveData(slot, chapter = saveChapterScope) {
+    const scoped = parseSaveData(safeGetLocalStorage(getSaveKey(slot, chapter)));
+    if (scoped) return scoped;
+
+    // Keep old single-set saves visible in the matching chapter's new slot set.
+    const legacy = parseSaveData(safeGetLocalStorage(`${LEGACY_SAVE_PREFIX}${slot}`));
+    return legacy && (legacy.chapter || "Prologue") === chapter ? legacy : null;
 }
 
 function createSaveData() {
@@ -1855,6 +2419,7 @@ function createSaveData() {
         slot: activeSaveSlot,
         language: currentLanguage,
         chapter: currentChapter,
+        saveChapter: saveChapterScope,
         line: currentLine,
         background: currentBackground,
         weather: currentWeather,
@@ -1882,11 +2447,15 @@ function saveGame(slot) {
 
     const ok =
         safeSetLocalStorage(
-            getSaveKey(slot),
+            getSaveKey(slot, saveChapterScope),
             JSON.stringify(data)
         );
 
     if (ok) {
+        const legacy = parseSaveData(safeGetLocalStorage(`${LEGACY_SAVE_PREFIX}${slot}`));
+        if (legacy && (legacy.chapter || "Prologue") === saveChapterScope) {
+            safeRemoveLocalStorage(`${LEGACY_SAVE_PREFIX}${slot}`);
+        }
         renderSaveSlots();
     }
 
@@ -1943,14 +2512,15 @@ async function loadGame(slot) {
             storyLines.length - 1
         );
 
-    currentChapter =
-        data.chapter || "Prologue";
+    currentChapter = data.chapter || "Prologue";
+    saveChapterScope = data.saveChapter || currentChapter;
 
     currentBackground = null;
     currentWeather = null;
     currentMusicName = null;
     chapterFinished = false;
     storyStarted = true;
+    unlockAchievement("firstSteps");
 
     stopTypewriter();
     resetCharacters();
@@ -1975,8 +2545,13 @@ function deleteSave(slot) {
 
     const deleted =
         safeRemoveLocalStorage(
-            getSaveKey(slot)
+            getSaveKey(slot, saveChapterScope)
         );
+
+    const legacy = parseSaveData(safeGetLocalStorage(`${LEGACY_SAVE_PREFIX}${slot}`));
+    if (legacy && (legacy.chapter || "Prologue") === saveChapterScope) {
+        safeRemoveLocalStorage(`${LEGACY_SAVE_PREFIX}${slot}`);
+    }
 
     if (activeSaveSlot === slot) {
         activeSaveSlot = null;
@@ -1988,15 +2563,12 @@ function deleteSave(slot) {
 }
 
 function deleteAllSaves() {
-    for (
-        let slot = 1;
-        slot <= SAVE_SLOTS;
-        slot++
-    ) {
-        safeRemoveLocalStorage(
-            getSaveKey(slot)
-        );
-    }
+    const chapters = getAvailableChapters().map(chapter => chapter.title);
+    if (!chapters.includes("Prologue")) chapters.push("Prologue");
+    chapters.forEach(chapter => {
+        for (let slot = 1; slot <= SAVE_SLOTS; slot++) safeRemoveLocalStorage(getSaveKey(slot, chapter));
+    });
+    for (let slot = 1; slot <= SAVE_SLOTS; slot++) safeRemoveLocalStorage(`${LEGACY_SAVE_PREFIX}${slot}`);
 
     activeSaveSlot = null;
     renderSaveSlots();
@@ -2035,6 +2607,8 @@ function renderSaveSlots() {
 
         wrapper.className =
             "save-slot-wrapper";
+        wrapper.dataset.slot = String(slot);
+        wrapper.classList.toggle("active", slot === saveCarouselIndex);
 
         const button =
             document.createElement("button");
@@ -2054,6 +2628,25 @@ function renderSaveSlots() {
 
         title.textContent =
             `SLOT ${slot}`;
+
+        const preview = document.createElement("div");
+        preview.className = "save-preview";
+        const sceneLine = data && storyLines[Number(data.line)];
+        const sceneName = data?.background || sceneLine?.background || "abandonedHall";
+        const sceneImage = BACKGROUNDS[sceneName] || BACKGROUNDS.abandonedHall;
+        preview.style.backgroundImage = `linear-gradient(rgba(0,0,0,.2), rgba(0,0,0,.35)), url("${sceneImage}")`;
+        if (data && sceneLine) {
+            const visibleCharacters = sceneLine.visibleCharacters || {};
+            const states = sceneLine.characterStates || {};
+            for (const character of ["Alice", "Z"]) {
+                if (visibleCharacters[character] === false) continue;
+                const sprite = document.createElement("img");
+                sprite.className = `save-preview-character ${character.toLowerCase()}`;
+                sprite.src = SPRITES[character]?.[states[character] || "001"] || SPRITES[character]?.["001"];
+                sprite.alt = "";
+                preview.appendChild(sprite);
+            }
+        }
 
         const information =
             document.createElement("div");
@@ -2084,10 +2677,7 @@ function renderSaveSlots() {
                 );
         }
 
-        button.append(
-            title,
-            information
-        );
+        button.append(title, preview, information);
 
         button.addEventListener(
             "click",
@@ -2131,6 +2721,46 @@ function renderSaveSlots() {
     }
 }
 
+function changeSaveCarousel(direction) {
+    saveCarouselIndex = ((saveCarouselIndex - 1 + direction + SAVE_SLOTS) % SAVE_SLOTS) + 1;
+    document.querySelectorAll(".save-slot-wrapper").forEach(wrapper => {
+        wrapper.classList.toggle("active", Number(wrapper.dataset.slot) === saveCarouselIndex);
+    });
+}
+
+function updateSaveScreenTitle() {
+    if (!dom.saveScreenTitle) return;
+    const ui = getUI();
+    const modeTitle = saveMode === "start" ? ui.startTitle : saveMode === "save" ? ui.save : ui.loadTitle;
+    dom.saveScreenTitle.textContent = `${modeTitle} — ${saveChapterScope}`;
+}
+
+function updateSaveChapterFilter() {
+    if (!dom.saveChapterFilter) return;
+    const visible = saveMode === "load" && saveReturnTo === "title";
+    dom.saveChapterFilter.hidden = !visible;
+    if (!visible) return;
+    availableChapters = getAvailableChapters();
+    if (!availableChapters.length) return;
+    const matchingIndex = availableChapters.findIndex(chapter => chapter.title === saveChapterScope);
+    saveChapterCarouselIndex = matchingIndex >= 0 ? matchingIndex : 0;
+    const selected = availableChapters[saveChapterCarouselIndex];
+    if (dom.saveChapterName) {
+        dom.saveChapterName.textContent = `${String(saveChapterCarouselIndex + 1).padStart(2, "0")} / ${String(availableChapters.length).padStart(2, "0")} — ${selected.title}`;
+    }
+}
+
+function changeSaveChapter(direction) {
+    availableChapters = getAvailableChapters();
+    if (!availableChapters.length) return;
+    saveChapterCarouselIndex = (saveChapterCarouselIndex + direction + availableChapters.length) % availableChapters.length;
+    saveChapterScope = availableChapters[saveChapterCarouselIndex].title;
+    saveCarouselIndex = findNewestSave()?.slot || 1;
+    updateSaveScreenTitle();
+    updateSaveChapterFilter();
+    renderSaveSlots();
+}
+
 async function openSaveScreen(
     mode = "load",
     returnTo = "title"
@@ -2138,32 +2768,55 @@ async function openSaveScreen(
     saveMode = mode;
     saveReturnTo = returnTo;
 
+    if (!storyLoaded) {
+        try { await loadStory(); } catch (error) { console.error("Could not load story preview data.", error); }
+    }
+    availableChapters = getAvailableChapters();
+
+    if (mode === "start") {
+        saveChapterScope = availableChapters[selectedChapterIndex]?.title || "Prologue";
+    } else if (mode === "save" || (mode === "load" && returnTo === "story")) {
+        saveChapterScope = currentChapter || "Prologue";
+    } else if (mode === "load" && returnTo === "title") {
+        const newestAnyChapter = findNewestSaveAcrossChapters();
+        saveChapterScope = newestAnyChapter?.data.chapter || availableChapters[selectedChapterIndex]?.title || "Prologue";
+    }
+
     if (
-        mode === "start" ||
-        mode === "load"
+        mode === "start"
     ) {
+        await transitionToStartMenuMusic();
+    } else if (mode === "load") {
         await transitionToSubmenuMusic();
     }
 
     showScreen(dom.saveScreen);
-
-    const ui = getUI();
-
+    const newest = mode === "load" && returnTo === "title"
+        ? findNewestSaveAcrossChapters()
+        : findNewestSave();
+    if (mode === "load" && newest) saveCarouselIndex = newest.slot;
+    else if (mode === "save" && Number.isInteger(activeSaveSlot)) saveCarouselIndex = activeSaveSlot;
+    else if (mode === "start") {
+        const firstEmpty = Array.from({ length: SAVE_SLOTS }, (_, i) => i + 1).find(slot => !getSaveData(slot));
+        saveCarouselIndex = firstEmpty || 1;
+    } else saveCarouselIndex = 1;
     if (dom.saveScreenTitle) {
-        dom.saveScreenTitle.textContent =
-            mode === "start"
-                ? ui.startTitle
-                : mode === "save"
-                    ? ui.save
-                    : ui.loadTitle;
+        updateSaveScreenTitle();
     }
 
+    updateSaveChapterFilter();
     renderSaveSlots();
 }
 
 async function closeSaveScreen() {
     if (saveReturnTo === "story") {
         showScreen(dom.storyScreen);
+        return;
+    }
+
+    if (saveReturnTo === "play") {
+        showScreen(dom.playScreen);
+        await transitionToSubmenuMusic();
         return;
     }
 
@@ -2174,6 +2827,7 @@ async function closeSaveScreen() {
 
 async function handleSaveSlot(slot) {
     playButtonSound();
+    if (saveMode === "start" || saveMode === "load") requestGameFullscreen();
 
     const existing =
         getSaveData(slot);
@@ -2190,7 +2844,7 @@ async function handleSaveSlot(slot) {
 
         activeSaveSlot = slot;
 
-        await startStory(0);
+        await startStory(availableChapters[selectedChapterIndex]?.startLine || 0);
 
         saveGame(slot);
 
@@ -2238,11 +2892,29 @@ function findNewestSave() {
     return newest;
 }
 
+function findNewestSaveAcrossChapters() {
+    const chapters = [...new Set([
+        "Prologue",
+        ...getAvailableChapters().map(chapter => chapter.title)
+    ])];
+    let newest = null;
+    for (const chapter of chapters) {
+        for (let slot = 1; slot <= SAVE_SLOTS; slot++) {
+            const data = getSaveData(slot, chapter);
+            if (!data) continue;
+            if (!newest || Number(data.timestamp) > Number(newest.data.timestamp)) {
+                newest = { slot, data, chapter: data.chapter || chapter };
+            }
+        }
+    }
+    return newest;
+}
+
 async function continueGame() {
     playButtonSound();
+    requestGameFullscreen();
 
-    const newest =
-        findNewestSave();
+    const newest = findNewestSaveAcrossChapters();
 
     if (!newest) {
         await openSaveScreen(
@@ -2252,6 +2924,7 @@ async function continueGame() {
         return;
     }
 
+    saveChapterScope = newest.data.saveChapter || newest.data.chapter || newest.chapter || "Prologue";
     await transitionToSubmenuMusic();
     await loadGame(newest.slot);
 }
@@ -2278,8 +2951,7 @@ function setupSettingsControls() {
         dom.settingsEffects.addEventListener(
             "change",
             () => {
-                settings.effects =
-                    dom.settingsEffects.checked;
+                settings.effects = dom.settingsEffects.checked;
 
                 saveSettings();
                 updateSettingsUI();
@@ -2302,12 +2974,25 @@ function setupSettingsControls() {
         );
     }
 
+    if (dom.settingsFlashingLights) {
+        dom.settingsFlashingLights.addEventListener("change", () => {
+            settings.flashingLights = dom.settingsFlashingLights.checked;
+            saveSettings();
+            updateSettingsUI();
+        });
+    }
+
+    if (dom.settingsMouseLight) {
+        dom.settingsMouseLight.addEventListener("change", () => {
+            setMouseLightEnabled(dom.settingsMouseLight.checked);
+        });
+    }
+
     if (dom.settingsQuality) {
         dom.settingsQuality.addEventListener(
             "change",
             () => {
-                settings.quality =
-                    dom.settingsQuality.value;
+                settings.quality = dom.settingsQuality.value;
 
                 saveSettings();
                 updateSettingsUI();
@@ -2406,18 +3091,23 @@ async function closeSettings() {
 
 async function openCredits() {
     playButtonSound();
+    finalCreditsOpen = false;
+    updateUI();
     showScreen(dom.creditsScreen);
     await stopMenu2IfNeeded();
 }
 
 async function closeCredits() {
     playButtonSound();
+    finalCreditsOpen = false;
+    updateUI();
     showScreen(dom.titleScreen);
     await transitionToMainMenuMusic();
 }
 
 async function stopMenu2IfNeeded() {
     createMenu2Audio();
+    createMenu3Audio();
 
     if (
         menu2Music &&
@@ -2432,6 +3122,12 @@ async function stopMenu2IfNeeded() {
         );
 
         safePause(menu2Music);
+    }
+
+    if (!menu3Music.paused) {
+        menu3Music.dataset.playing = "0";
+        await fadeAudio(menu3Music, 0, 250);
+        safePause(menu3Music);
     }
 }
 
@@ -2480,8 +3176,321 @@ function toggleVNMenu() {
 }
 
 /* =========================================================
+   WEBGL SHADER (ULTRA QUALITY)
+========================================================= */
+
+let shaderGL = null;
+let shaderProgram = null;
+let shaderReady = false;
+let shaderAnimating = false;
+const mouseLightingAvailable = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+let shaderMousePos = [-2, -2];
+let lastPointerPosition = null;
+let shaderUniforms = {};
+
+function updateShaderMouse(event) {
+    if (!mouseLightingAvailable || event.pointerType === "touch") return;
+    lastPointerPosition = [event.clientX, event.clientY];
+    if (!settings.mouseLight) return;
+
+    const story = document.getElementById("story-screen");
+    if (!story) return;
+    const rect = story.getBoundingClientRect();
+    shaderMousePos = MOUSE_LIT_BACKGROUNDS.has(currentBackground)
+        ? [
+            Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width)),
+            1 - Math.min(1, Math.max(0, (event.clientY - rect.top) / rect.height))
+        ]
+        : [-2, -2];
+
+    for (const image of [document.getElementById("alice"), document.getElementById("z"), document.getElementById("corrode")]) {
+        if (!image) continue;
+        const bounds = image.getBoundingClientRect();
+        const nearestX = Math.max(bounds.left, Math.min(event.clientX, bounds.right));
+        const nearestY = Math.max(bounds.top, Math.min(event.clientY, bounds.bottom));
+        const distance = Math.hypot(event.clientX - nearestX, event.clientY - nearestY) / Math.max(rect.height, 1);
+        // Let the character light reach a little farther than the background beam.
+        const amount = Math.min(1, distance / 0.33);
+        const illumination = 1 - amount * amount * (3 - 2 * amount);
+        const visible = image.style.visibility !== "hidden" && !(image.id === "z" && !image.classList.contains("z-visible"));
+        image.style.setProperty("--mouse-light", visible ? illumination.toFixed(3) : "0");
+    }
+
+    document.querySelectorAll("#weather .snowflake").forEach(flake => {
+        const bounds = flake.getBoundingClientRect();
+        const dx = event.clientX - (bounds.left + bounds.width / 2);
+        const dy = event.clientY - (bounds.top + bounds.height / 2);
+        const distance = Math.hypot(dx, dy) / Math.max(rect.height, 1);
+        const glow = Math.max(0, 1 - distance / 0.20);
+        flake.style.setProperty("--pointer-brightness", (1 + glow * 1.6).toFixed(2));
+        flake.style.setProperty("--pointer-glow", `${(glow * 10).toFixed(1)}px`);
+        flake.style.setProperty("--pointer-glow-alpha", (glow * 0.8).toFixed(2));
+    });
+}
+
+function updateBackgroundMouseTarget() {
+    if (
+        !mouseLightingAvailable ||
+        !settings.mouseLight ||
+        !MOUSE_LIT_BACKGROUNDS.has(currentBackground)
+    ) {
+        shaderMousePos = [-2, -2];
+        return;
+    }
+
+    if (lastPointerPosition) {
+        updateShaderMouse({
+            pointerType: "mouse",
+            clientX: lastPointerPosition[0],
+            clientY: lastPointerPosition[1]
+        });
+    }
+}
+
+function setMouseLightEnabled(enabled) {
+    if (!mouseLightingAvailable) return;
+    settings.mouseLight = Boolean(enabled);
+    saveSettings();
+    updateSettingsUI();
+    playFlashlightSound();
+
+    if (!settings.mouseLight) {
+        shaderMousePos = [-2, -2];
+        for (const image of [dom.alice, dom.z, dom.corrode]) {
+            image?.style.setProperty("--mouse-light", "0");
+        }
+        document.querySelectorAll("#weather .snowflake").forEach(flake => {
+            flake.style.setProperty("--pointer-brightness", "1");
+            flake.style.setProperty("--pointer-glow", "0px");
+            flake.style.setProperty("--pointer-glow-alpha", "0");
+        });
+    } else if (lastPointerPosition) {
+        updateShaderMouse({
+            pointerType: "mouse",
+            clientX: lastPointerPosition[0],
+            clientY: lastPointerPosition[1]
+        });
+    }
+}
+
+window.addEventListener("pointermove", updateShaderMouse, { passive: true });
+
+async function loadShaderSource(url) {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Failed to load ${url}`);
+    return await response.text();
+}
+
+function createShader(gl, type, source) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error("[Killer Drones] Shader compile error:", gl.getShaderInfoLog(shader));
+        gl.deleteShader(shader);
+        return null;
+    }
+    return shader;
+}
+
+async function initShaderSystem() {
+    const canvas = document.getElementById("shader-canvas");
+    const layer = document.getElementById("shader-layer");
+    if (!canvas || !layer) return false;
+
+    const gl = canvas.getContext("webgl", {
+        alpha: true,
+        premultipliedAlpha: false,
+        antialias: false
+    });
+
+    if (!gl) {
+        console.warn("[Killer Drones] WebGL not available — Ultra lighting disabled.");
+        return false;
+    }
+
+    try {
+        const inlineVert = document.getElementById("scene-vertex-shader")?.textContent.trim();
+        const inlineFrag = document.getElementById("scene-fragment-shader")?.textContent.trim();
+        const [vertSrc, fragSrc] = await Promise.all([
+            inlineVert || loadShaderSource(new URL("scene.vert", document.baseURI).href),
+            inlineFrag || loadShaderSource(new URL("scene.frag", document.baseURI).href)
+        ]);
+
+        const vert = createShader(gl, gl.VERTEX_SHADER, vertSrc);
+        const frag = createShader(gl, gl.FRAGMENT_SHADER, fragSrc);
+
+        if (!vert || !frag) return false;
+
+        const program = gl.createProgram();
+        gl.attachShader(program, vert);
+        gl.attachShader(program, frag);
+        gl.linkProgram(program);
+
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+            console.error("[Killer Drones] Shader link error:", gl.getProgramInfoLog(program));
+            return false;
+        }
+
+        // Fullscreen quad
+        const positions = new Float32Array([
+            -1, -1,  1, -1,  -1, 1,
+            -1,  1,  1, -1,   1, 1
+        ]);
+        const posBuf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
+        gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+
+        const aPos = gl.getAttribLocation(program, "a_position");
+
+        shaderUniforms = {
+            u_mousePosition: gl.getUniformLocation(program, "u_mousePosition"),
+            u_lightRadius: gl.getUniformLocation(program, "u_lightRadius"),
+            u_time: gl.getUniformLocation(program, "u_time"),
+            u_eyeAlice: gl.getUniformLocation(program, "u_eyeAlice"),
+            u_eyeZ: gl.getUniformLocation(program, "u_eyeZ"),
+            u_eyeRadiusAlice: gl.getUniformLocation(program, "u_eyeRadiusAlice"),
+            u_eyeRadiusZ: gl.getUniformLocation(program, "u_eyeRadiusZ"),
+            u_aspect: gl.getUniformLocation(program, "u_aspect")
+        };
+
+        shaderGL = {
+            gl,
+            program,
+            canvas,
+            layer,
+            posBuf,
+            aPos
+        };
+
+        shaderProgram = program;
+        shaderReady = true;
+        console.log("[Killer Drones] Ultra shader system ready.");
+        return true;
+    } catch (err) {
+        console.error("[Killer Drones] Failed to init Ultra shaders:", err);
+        return false;
+    }
+}
+
+function resizeShaderCanvas() {
+    if (!shaderGL) return;
+    const { canvas, gl } = shaderGL;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = Math.floor(window.innerWidth * dpr);
+    const h = Math.floor(window.innerHeight * dpr);
+    if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+        gl.viewport(0, 0, w, h);
+    }
+}
+
+function renderShaderFrame() {
+    if (!shaderReady || !shaderGL || settings.quality !== "ultra" || !settings.effects) {
+        shaderAnimating = false;
+        return;
+    }
+
+    const { gl, program, posBuf, aPos, layer } = shaderGL;
+
+    resizeShaderCanvas();
+
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+    gl.useProgram(program);
+
+    const t = performance.now() * 0.001;
+    gl.uniform2f(shaderUniforms.u_mousePosition, shaderMousePos[0], shaderMousePos[1]);
+    gl.uniform1f(shaderUniforms.u_lightRadius, 0.23);
+    gl.uniform1f(shaderUniforms.u_time, t);
+
+    const storyRect = document.getElementById("story-screen").getBoundingClientRect();
+    const getEye = (image, xFraction, yFraction, visible) => {
+        if (!image || !visible) return { point: [-2, -2], radius: 0 };
+        const rect = image.getBoundingClientRect();
+        const point = [
+            (rect.left - storyRect.left + rect.width * xFraction) / storyRect.width,
+            1 - (rect.top - storyRect.top + rect.height * yFraction) / storyRect.height
+        ];
+        return { point, radius: rect.height / storyRect.height * 0.13 };
+    };
+    const aliceEye = getEye(document.getElementById("alice"), 0.47, 0.405, true);
+    const zImage = document.getElementById("z");
+    const zEye = getEye(zImage, 0.49, 0.405, zImage?.classList.contains("z-visible"));
+    gl.uniform2f(shaderUniforms.u_eyeAlice, aliceEye.point[0], aliceEye.point[1]);
+    gl.uniform2f(shaderUniforms.u_eyeZ, zEye.point[0], zEye.point[1]);
+    gl.uniform1f(shaderUniforms.u_eyeRadiusAlice, aliceEye.radius);
+    gl.uniform1f(shaderUniforms.u_eyeRadiusZ, zEye.radius);
+    gl.uniform1f(shaderUniforms.u_aspect, storyRect.width / storyRect.height);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
+    gl.enableVertexAttribArray(aPos);
+    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+    if (layer) layer.classList.add("active");
+
+    requestAnimationFrame(renderShaderFrame);
+}
+
+function updateShaderQuality() {
+    const story = document.getElementById("story-screen");
+    const layer = document.getElementById("shader-layer");
+
+    if (settings.quality === "ultra" && settings.effects) {
+        if (!shaderReady) {
+            initShaderSystem().then(ok => {
+                if (ok && settings.quality === "ultra" && settings.effects) {
+                    if (story) {
+                        story.classList.add("shader-enabled");
+                        story.classList.remove("shader-disabled", "shader-fallback");
+                    }
+                    if (!shaderAnimating) {
+                        shaderAnimating = true;
+                        requestAnimationFrame(renderShaderFrame);
+                    }
+                } else if (story) {
+                    story.classList.add("shader-fallback");
+                    story.classList.remove("shader-enabled");
+                }
+            });
+        } else {
+            if (story) {
+                story.classList.add("shader-enabled");
+                story.classList.remove("shader-disabled", "shader-fallback");
+            }
+            if (layer) layer.classList.add("active");
+            if (!shaderAnimating) {
+                shaderAnimating = true;
+                requestAnimationFrame(renderShaderFrame);
+            }
+        }
+    } else {
+        if (layer) layer.classList.remove("active");
+        if (story) {
+            story.classList.remove("shader-enabled");
+            story.classList.add("shader-disabled");
+            story.classList.remove("shader-fallback");
+        }
+        shaderAnimating = false;
+    }
+}
+
+/* =========================================================
    FPS
 ========================================================= */
+
+function updateFPSVisibility() {
+    if (!dom.fpsCounter) return;
+    const excluded = [dom.loadingScreen, dom.warningScreen].some(screen => screen?.classList.contains("active"));
+    dom.fpsCounter.style.display = settings.showFPS && !excluded ? "block" : "none";
+}
 
 function startFPSCounter() {
     const tick = now => {
@@ -2504,10 +3513,7 @@ function startFPSCounter() {
                 dom.fpsCounter.textContent =
                     `${fpsValue} FPS`;
 
-                dom.fpsCounter.style.display =
-                    settings.showFPS
-                        ? ""
-                        : "none";
+                updateFPSVisibility();
             }
         }
 
@@ -2522,19 +3528,75 @@ function startFPSCounter() {
 ========================================================= */
 
 function setupEvents() {
+    dom.corrode?.addEventListener("error", () => {
+        dom.corrode.dataset.assetMissing = "1";
+        setCharacterVisible(dom.corrode, false);
+    }, { once: true });
+    dom.warningScreen?.addEventListener("pointerdown", playWarningBroadcast, { passive: true });
+
+    document.addEventListener("mouseover", event => {
+        if (event.relatedTarget instanceof Node && event.target instanceof Element && event.target.contains(event.relatedTarget)) return;
+        if (event.target instanceof Element && event.target.closest("button, [role='button']")) playHoverSound();
+    });
+
+    dom.warningCommandInput?.addEventListener("input", () => {
+        const command = dom.warningCommandInput.value.trim().toLowerCase();
+        if (command === "y" || command === "n") {
+            void answerWarning(command === "y");
+        } else {
+            dom.warningCommandInput.value = "";
+        }
+    });
+
     if (dom.startButton) {
         dom.startButton.addEventListener(
             "click",
-            async () => {
-                playButtonSound();
-
-                await openSaveScreen(
-                    "start",
-                    "title"
-                );
-            }
+            openPlayScreen
         );
     }
+
+    dom.titleStartPrompt?.addEventListener("click", dismissTitleIntro);
+    dom.titleScreen?.addEventListener("pointerdown", () => {
+        if (dom.titleScreen.classList.contains("title-gated")) dismissTitleIntro();
+    });
+
+    dom.chapterPrevious?.addEventListener("click", () => {
+        playButtonSound();
+        selectedChapterIndex--;
+        renderChapterCarousel();
+    });
+    dom.chapterNext?.addEventListener("click", () => {
+        playButtonSound();
+        selectedChapterIndex++;
+        renderChapterCarousel();
+    });
+    dom.savePrevious?.addEventListener("click", () => {
+        playButtonSound();
+        changeSaveCarousel(-1);
+    });
+    dom.saveNext?.addEventListener("click", () => {
+        playButtonSound();
+        changeSaveCarousel(1);
+    });
+    dom.saveChapterPrevious?.addEventListener("click", () => {
+        playButtonSound();
+        changeSaveChapter(-1);
+    });
+    dom.saveChapterNext?.addEventListener("click", () => {
+        playButtonSound();
+        changeSaveChapter(1);
+    });
+    dom.chaptersTab?.addEventListener("click", () => showPlayTab("chapters"));
+    dom.achievementsTab?.addEventListener("click", () => showPlayTab("achievements"));
+    dom.playChapterButton?.addEventListener("click", async () => {
+        playButtonSound();
+        await openSaveScreen("start", "play");
+    });
+    dom.playBackButton?.addEventListener("click", async () => {
+        playButtonSound();
+        showScreen(dom.titleScreen);
+        await transitionToMainMenuMusic();
+    });
 
     if (dom.continueButton) {
         dom.continueButton.addEventListener(
@@ -2734,6 +3796,74 @@ function setupEvents() {
     document.addEventListener(
         "keydown",
         async event => {
+            if (dom.warningScreen?.classList.contains("active")) {
+                playWarningBroadcast();
+                if (event.target === dom.warningCommandInput) return;
+                if (event.key.toLowerCase() === "y") {
+                    event.preventDefault();
+                    await answerWarning(true);
+                } else if (event.key.toLowerCase() === "n") {
+                    event.preventDefault();
+                    await answerWarning(false);
+                }
+                return;
+            }
+
+            if (dom.titleScreen?.classList.contains("active") && dom.titleScreen.classList.contains("title-gated")) {
+                event.preventDefault();
+                dismissTitleIntro();
+                return;
+            }
+
+            const isLeft = event.key === "ArrowLeft";
+            const isRight = event.key === "ArrowRight";
+            if ((isLeft || isRight) && dom.playScreen?.classList.contains("active") && !dom.chaptersPanel?.hidden) {
+                event.preventDefault();
+                playButtonSound();
+                selectedChapterIndex += isLeft ? -1 : 1;
+                renderChapterCarousel();
+                return;
+            }
+            if ((isLeft || isRight) && dom.saveScreen?.classList.contains("active")) {
+                event.preventDefault();
+                playButtonSound();
+                if (event.target instanceof Element && event.target.closest("#save-chapter-filter")) {
+                    changeSaveChapter(isLeft ? -1 : 1);
+                } else {
+                    changeSaveCarousel(isLeft ? -1 : 1);
+                }
+                return;
+            }
+
+            if (event.key === "Escape") {
+                if (dom.storyScreen?.classList.contains("active")) {
+                    event.preventDefault();
+                    toggleVNMenu();
+                    return;
+                }
+                if (dom.saveScreen?.classList.contains("active")) {
+                    event.preventDefault();
+                    await closeSaveScreen();
+                    return;
+                }
+                if (dom.playScreen?.classList.contains("active")) {
+                    event.preventDefault();
+                    showScreen(dom.titleScreen);
+                    await transitionToMainMenuMusic();
+                    return;
+                }
+                if (dom.settingsScreen?.classList.contains("active")) {
+                    event.preventDefault();
+                    await closeSettings();
+                    return;
+                }
+                if (dom.creditsScreen?.classList.contains("active")) {
+                    event.preventDefault();
+                    await closeCredits();
+                    return;
+                }
+            }
+
             if (
                 !dom.storyScreen ||
                 !dom.storyScreen.classList.contains(
@@ -2743,13 +3873,20 @@ function setupEvents() {
                 return;
             }
 
-            if (event.key === "Escape") {
+            if (event.key.toLowerCase() === "l") {
                 event.preventDefault();
-                toggleVNMenu();
+                setMouseLightEnabled(!settings.mouseLight);
                 return;
             }
 
             if (vnMenuOpen) return;
+
+            const isActivationKey =
+                event.key === "Enter" || event.key === " ";
+            const targetHasNativeActivation =
+                event.target instanceof Element &&
+                event.target.closest("button, input, select, textarea, [contenteditable='true']");
+            if (isActivationKey && targetHasNativeActivation) return;
 
             if (
                 event.key === "ArrowRight" ||
@@ -2757,6 +3894,7 @@ function setupEvents() {
                 event.key === " "
             ) {
                 event.preventDefault();
+                if (event.key === "Enter") playButtonSound();
                 await nextLine();
                 return;
             }
@@ -2769,6 +3907,16 @@ function setupEvents() {
             }
         }
     );
+}
+
+async function answerWarning(disableFlashingLights) {
+    requestGameFullscreen();
+    settings.flashingLights = !disableFlashingLights;
+    saveSettings();
+    updateSettingsUI();
+    playButtonSound();
+    showScreen(dom.titleScreen);
+    await startMenuMusic();
 }
 
 /* =========================================================
@@ -2791,7 +3939,7 @@ function setupVignetteFallback() {
             objectFit: "cover",
             pointerEvents: "none",
             userSelect: "none",
-            zIndex: "10"
+            zIndex: "35"
         }
     );
 }
@@ -2900,10 +4048,19 @@ async function initializeGame() {
         setLoadingProgress(70, 3);
 
         createMenu2Audio();
+        createMenu3Audio();
 
         await Promise.all([
             preloadAudio(MUSIC.menu),
+            preloadAudio(MUSIC.menu3),
             preloadAudio(MUSIC.abandoned_hall),
+            dom.warningSound
+                ? preloadAudio(dom.warningSound.src)
+                : Promise.resolve(),
+
+            dom.flashlightSound
+                ? preloadAudio(dom.flashlightSound.src)
+                : Promise.resolve(),
 
             dom.textSound
                 ? preloadAudio(
@@ -2946,9 +4103,8 @@ async function initializeGame() {
 
         await wait(300);
 
-        showScreen(dom.titleScreen);
-
-        await startMenuMusic();
+        showScreen(dom.warningScreen || dom.titleScreen);
+        playWarningBroadcast();
     } catch (error) {
         console.error(
             "[Killer Drones] Initialization failed:",
@@ -2968,9 +4124,8 @@ async function initializeGame() {
 
         setLoadingProgress(100, 4);
 
-        showScreen(dom.titleScreen);
-
-        await startMenuMusic();
+        showScreen(dom.warningScreen || dom.titleScreen);
+        playWarningBroadcast();
     }
 }
 

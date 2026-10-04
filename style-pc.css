@@ -259,17 +259,7 @@ html[data-quality="ultra"] #shader-layer.active {
     bottom: 0;
 }
 
-@media (max-width: 700px) {
-    #warning-screen { padding: 8px; }
-    .warning-terminal { font-size: 12px; }
-    .warning-section { margin-bottom: 12px; }
-    #warning-screen .warning-language-options .language-button { padding: 3px 0; }
-    #story-screen #characters { bottom: 135px; }
-}
 
-@media (max-width: 400px) {
-    #story-screen #characters { bottom: 124px; }
-}
  
 .screen.active { 
     display: block; 
@@ -1505,66 +1495,7 @@ html[data-flashing-lights="off"] .game-title::after {
     opacity: 1; 
 } 
 
-#story-screen.cutscene-prep #background,
-#story-screen.cutscene-prep #weather,
-#story-screen.cutscene-prep #vignette,
-#story-screen.cutscene-prep #shader-layer {
-    opacity: 0;
-    transition: opacity 1.5s ease;
-}
-
-#story-screen.cutscene-prep #alice {
-    animation: aliceCrawlOut 1.5s ease-in forwards;
-}
-
-#story-screen.cutscene-prep #alice.alice-right {
-    animation-name: aliceCrawlOutRight;
-}
-
-#story-screen.cutscene-prep #z {
-    left: 50%;
-    transition: left 1.5s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-#story-screen.cutscene-prep #dialogue-box,
-#story-screen.cutscene-playing #background,
-#story-screen.cutscene-playing #weather,
-#story-screen.cutscene-playing #vignette,
-#story-screen.cutscene-playing #shader-layer,
-#story-screen.cutscene-playing #characters,
-#story-screen.cutscene-playing #dialogue-box,
-#story-screen.cutscene-playing .vn-menu-button,
-#story-screen.cutscene-playing .vn-menu {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.story-cutscene-video {
-    position: absolute;
-    inset: 0;
-    z-index: 1000;
-    width: 100%;
-    height: 100%;
-    display: none;
-    object-fit: contain;
-    background: #000;
-}
-
-#story-screen.cutscene-playing .story-cutscene-video {
-    display: block;
-}
-
-@keyframes aliceCrawlOut {
-    0% { transform: translate(-50%, 0) rotate(0deg); }
-    30% { transform: translate(-50%, 8vh) rotate(10deg) scaleY(0.78); }
-    100% { transform: translate(-190vw, 12vh) rotate(12deg) scaleY(0.72); }
-}
-
-@keyframes aliceCrawlOutRight {
-    0% { transform: translate(-50%, 0) rotate(0deg); }
-    30% { transform: translate(-50%, 8vh) rotate(-10deg) scaleY(0.78); }
-    100% { transform: translate(190vw, 12vh) rotate(-12deg) scaleY(0.72); }
-}
+#corrode.corrode-visible { left: 74%; opacity: 1; max-height: min(78vh, 760px); transform: translateX(-50%); }
  
  
 /* ========================================================= 
@@ -2063,210 +1994,16 @@ html[data-reduced-motion="true"] *::after {
    RESPONSIVE 
 ========================================================= */ 
  
-@media (max-width: 800px) { 
- 
-    .kd-settings-grid { 
-        grid-template-columns: 1fr; 
-    } 
- 
-    .settings-content, 
-    .save-content { 
-        width: 94%; 
-        padding: 20px; 
-    } 
- 
-    .save-slots { 
-        grid-template-columns: 1fr; 
-    } 
- 
-    .game-subtitle { 
-        letter-spacing: 4px; 
-    } 
-} 
  
  
-@media (max-width: 600px) { 
- 
-    .loading-status { 
-        left: 5%; 
- 
-        width: 40vw; 
-    } 
- 
-    .loading-step { 
-        font-size: 9px; 
- 
-        letter-spacing: 1px; 
- 
-        gap: 8px; 
-    } 
- 
-    .loading-center { 
-        width: 65vw; 
-    } 
- 
-    .game-title { 
-        font-size: 38px; 
- 
-        letter-spacing: 3px; 
-    } 
- 
-    .game-subtitle { 
-        font-size: 13px; 
- 
-        letter-spacing: 3px; 
-    } 
- 
-    .menu-button { 
-        width: 240px; 
- 
-        font-size: 18px; 
-    } 
- 
-    .character { 
-        bottom: 155px; 
- 
-        max-width: 85vw; 
- 
-        max-height: 68vh; 
-    } 
- 
-    #z { 
-        bottom: 160px; 
- 
-        max-height: 60vh; 
-    } 
- 
-    #alice.alice-right { 
-        left: 70%; 
-    } 
- 
-    #z.z-visible { 
-        left: 24%; 
-    } 
- 
-    #dialogue-box { 
-        left: 3%; 
-        right: 3%; 
-        bottom: 15px; 
- 
-        min-height: 130px; 
- 
-        padding: 
-            24px 
-            18px 
-            15px; 
-    } 
- 
-    #dialogue-text { 
-        padding-right: 0; 
- 
-        font-size: 16px; 
-    } 
- 
-    #speaker { 
-        left: 18px; 
- 
-        font-size: 15px; 
-    } 
- 
-    #next-button { 
-        right: 12px; 
-        bottom: 12px; 
- 
-        font-size: 12px; 
-    } 
- 
-    .vn-menu-button { 
-        top: 12px; 
-        right: 12px; 
-    } 
- 
-    .vn-menu-panel { 
-        width: 92%; 
- 
-        padding: 25px; 
-    } 
- 
-    .vn-menu-title { 
-        font-size: 25px; 
-    } 
- 
-    .save-slot-wrapper { 
-        grid-template-columns: 
-            minmax(0, 1fr) 
-            70px; 
-    } 
- 
-    .save-delete-button { 
-        font-size: 8px; 
-    } 
-} 
  
  
-@media (max-width: 400px) { 
- 
-    .game-title { 
-        font-size: 30px; 
-    } 
- 
-    .menu-button { 
-        width: 210px; 
- 
-        font-size: 16px; 
-    } 
- 
-    .character { 
-        bottom: 145px; 
- 
-        max-width: 90vw; 
- 
-        max-height: 62vh; 
-    } 
- 
-    #z { 
-        bottom: 150px; 
- 
-        max-height: 55vh; 
-    } 
- 
-    #dialogue-text { 
-        font-size: 14px; 
-    } 
- 
-    .settings-content, 
-    .save-content { 
-        padding: 12px; 
-    } 
- 
-    .settings-title, 
-    .save-title, 
-    #save-screen-title { 
-        font-size: 30px; 
- 
-        margin-bottom: 25px; 
-    } 
- 
-    .settings-section { 
-        padding: 12px; 
-    } 
-} 
  
  
 /* ========================================================= 
    TOUCH DEVICES 
 ========================================================= */ 
  
-@media (hover: none) { 
- 
-    .menu-button:hover, 
-    .language-button:hover, 
-    .save-slot:hover, 
-    .vn-menu-option:hover, 
-    #next-button:hover { 
-        transform: none; 
-    } 
-} 
  
  
 /* ========================================================= 
@@ -2459,17 +2196,20 @@ input:focus-visible {
     animation: creditsGridMove 8s linear infinite;
 }
 
+#story-screen #characters .character {
+    filter: brightness(calc(1 + var(--mouse-light, 0) * 0.45)) contrast(1.04);
+}
+
 #story-screen.shader-enabled #characters .character {
-    filter: brightness(calc(0.58 + var(--mouse-light, 0) * 0.30)) contrast(1.05);
+    filter: brightness(calc(0.48 + var(--mouse-light, 0) * 0.90)) contrast(1.05);
+}
+
+#story-screen.shader-fallback #characters .character {
+    filter: brightness(calc(0.78 + var(--mouse-light, 0) * 0.66)) contrast(1.04);
 }
 
 #story-screen.shader-enabled #background {
     filter: brightness(0.14) contrast(1.1);
-}
-
-/* The files room keeps enough source brightness for the pointer to reveal it. */
-#story-screen.shader-enabled.mouse-lit-background #background {
-    filter: brightness(0.56) contrast(1.08);
 }
  
  
@@ -2509,7 +2249,7 @@ input:focus-visible {
 #story-screen.shader-fallback #characters .character { 
  
     filter: 
-        brightness(calc(0.78 + var(--mouse-light, 0) * 0.50)) 
+        brightness(calc(0.78 + var(--mouse-light, 0) * 0.66)) 
         contrast(1.04); 
 } 
  
@@ -2542,360 +2282,12 @@ input:focus-visible {
    SAME GAME VERSION 
 ========================================================= */ 
  
-@media (max-width: 700px) { 
- 
-    #game { 
-        width: 100vw; 
-        height: 100dvh; 
-    } 
- 
- 
-    /* ========================= 
-       TITLE 
-    ========================= */ 
- 
-    .title-content { 
-        width: 92%; 
-    } 
- 
- 
-    .game-title { 
-        font-size: clamp( 
-            30px, 
-            10vw, 
-            58px 
-        ); 
- 
-        letter-spacing: 3px; 
-    } 
- 
- 
-    .game-subtitle { 
-        margin-top: 12px; 
- 
-        font-size: 12px; 
- 
-        letter-spacing: 3px; 
-    } 
- 
- 
-    .title-menu { 
-        margin-top: 45px; 
- 
-        gap: 10px; 
-    } 
- 
- 
-    .menu-button { 
-        width: min( 
-            82vw, 
-            340px 
-        ); 
- 
-        padding: 13px 16px; 
- 
-        font-size: 17px; 
-    } 
- 
- 
-    /* ========================= 
-       SETTINGS 
-    ========================= */ 
- 
-    .settings-content, 
-    .save-content { 
-        width: 92%; 
-        max-width: none; 
- 
-        max-height: 90dvh; 
- 
-        overflow-y: auto; 
-    } 
- 
- 
-    .settings-title, 
-    .save-title { 
-        margin-bottom: 28px; 
- 
-        font-size: clamp( 
-            30px, 
-            8vw, 
-            48px 
-        ); 
- 
-        letter-spacing: 3px; 
-    } 
- 
- 
-    .settings-section { 
-        margin-bottom: 24px; 
-    } 
- 
- 
-    .settings-label { 
-        margin-bottom: 12px; 
- 
-        font-size: 13px; 
- 
-        letter-spacing: 2px; 
-    } 
- 
- 
-    .language-button { 
-        width: 100%; 
- 
-        padding: 12px; 
- 
-        font-size: 14px; 
-    } 
- 
- 
-    /* ========================= 
-       SAVE 
-    ========================= */ 
- 
-    .save-slots { 
-        grid-template-columns: 1fr; 
- 
-        max-height: 60dvh; 
-    } 
- 
- 
-    /* ========================= 
-       STORY 
-    ========================= */ 
- 
-    #story-screen { 
-        height: 100dvh; 
-    } 
- 
- 
-    #background { 
-        background-position: center center; 
-    } 
- 
- 
-    /* ========================= 
-       CHARACTERS 
-    ========================= */ 
- 
-    .character { 
-        bottom: 125px; 
- 
-        max-width: 78vw; 
- 
-        max-height: 58dvh; 
-    } 
- 
- 
-    #alice { 
-        left: 50%; 
-    } 
- 
- 
-    #alice.alice-right { 
-        left: 72%; 
-    } 
- 
- 
-    #z { 
-        bottom: 130px; 
- 
-        max-height: 52dvh; 
-    } 
- 
- 
-    #z.z-visible { 
-        left: 18%; 
-    } 
- 
- 
-    /* ========================= 
-       DIALOGUE 
-    ========================= */ 
- 
-    #dialogue-box { 
- 
-        left: 3vw; 
-        right: 3vw; 
- 
-        bottom: 12px; 
- 
-        min-height: 125px; 
- 
-        padding: 
-            23px 
-            16px 
-            14px; 
-    } 
- 
- 
-    #speaker { 
- 
-        left: 16px; 
- 
-        top: -16px; 
- 
-        padding: 
-            4px 
-            11px; 
- 
-        font-size: 14px; 
- 
-        letter-spacing: 1px; 
-    } 
- 
- 
-    #dialogue-text { 
- 
-        min-height: 55px; 
- 
-        padding-right: 0; 
- 
-        font-size: clamp( 
-            14px, 
-            4vw, 
-            17px 
-        ); 
- 
-        line-height: 1.45; 
-    } 
- 
- 
-    #next-button { 
- 
-        right: 10px; 
- 
-        bottom: 10px; 
- 
-        padding: 
-            7px 
-            12px; 
- 
-        font-size: 12px; 
-    } 
- 
- 
-    /* ========================= 
-       VN BUTTON 
-    ========================= */ 
- 
-    .vn-menu-button { 
- 
-        top: 10px; 
- 
-        right: 10px; 
- 
-        width: 44px; 
- 
-        height: 44px; 
- 
-        font-size: 20px; 
-    } 
- 
- 
-    /* ========================= 
-       VN MENU 
-    ========================= */ 
- 
-    .vn-menu-panel { 
- 
-        width: 90vw; 
- 
-        max-height: 85dvh; 
- 
-        overflow-y: auto; 
- 
-        padding: 25px 18px; 
-    } 
- 
- 
-    .vn-menu-title { 
- 
-        margin-bottom: 20px; 
- 
-        font-size: 25px; 
- 
-        letter-spacing: 3px; 
-    } 
- 
- 
-    .vn-menu-option { 
- 
-        padding: 12px; 
- 
-        font-size: 14px; 
-    } 
-} 
  
  
 /* ========================================================= 
    SMALL PHONES 
 ========================================================= */ 
  
-@media (max-width: 400px) { 
- 
-    .game-title { 
-        font-size: 27px; 
-    } 
- 
- 
-    .game-subtitle { 
-        font-size: 10px; 
- 
-        letter-spacing: 2px; 
-    } 
- 
- 
-    .title-menu { 
-        margin-top: 35px; 
-    } 
- 
- 
-    .menu-button { 
-        width: 86vw; 
- 
-        font-size: 15px; 
-    } 
- 
- 
-    .character { 
-        bottom: 120px; 
- 
-        max-width: 84vw; 
- 
-        max-height: 53dvh; 
-    } 
- 
- 
-    #z { 
-        bottom: 125px; 
- 
-        max-height: 48dvh; 
-    } 
- 
- 
-    #dialogue-box { 
-        bottom: 9px; 
- 
-        min-height: 115px; 
- 
-        padding: 
-            21px 
-            13px 
-            12px; 
-    } 
- 
- 
-    #dialogue-text { 
-        font-size: 14px; 
-    } 
- 
- 
-    #speaker { 
-        font-size: 12px; 
-    } 
-} 
 /* ========================================================= 
    STORY CHOICES 
 ========================================================= */ 
@@ -2980,56 +2372,8 @@ input:focus-visible {
     transform: translateX(2px); 
 } 
  
-@media (max-width: 700px) { 
-    .kd-choice-container { 
-        left: 3vw; 
-        right: 3vw; 
-        bottom: 151px; 
-        transform: none; 
-        width: auto; 
-        max-height: 43dvh; 
-        padding: 12px; 
-        gap: 8px; 
-    } 
  
-    .kd-choice-title { 
-        font-size: 11px; 
-        letter-spacing: 3px; 
-    } 
  
-    .kd-choice-button { 
-        min-height: 48px; 
-        padding: 12px 13px; 
-        font-size: 14px; 
-        line-height: 1.35; 
-    } 
- 
-    .kd-choice-button:hover, 
-    .kd-choice-button:focus-visible { 
-        transform: none; 
-    } 
-} 
- 
-@media (max-width: 400px) { 
-    .kd-choice-container { 
-        bottom: 137px; 
-        max-height: 45dvh; 
-        padding: 10px; 
-    } 
- 
-    .kd-choice-button { 
-        min-height: 44px; 
-        padding: 10px 11px; 
-        font-size: 13px; 
-    } 
-} 
- 
-@media (max-height: 650px) and (orientation: landscape) { 
-    .kd-choice-container { 
-        bottom: 120px; 
-        max-height: 50vh; 
-    } 
-} 
  
 /* ========================================================= 
    RESTORED CREDITS SCREEN 
@@ -3170,6 +2514,32 @@ input:focus-visible {
     font-size: 0.84em;
     line-height: 1.5;
 }
+ 
+/* ========================================================= 
+   FPS COUNTER 
+========================================================= */ 
+ 
+#fps-counter { 
+    position: absolute; 
+    top: 12px; 
+    left: 12px; 
+    z-index: 300; 
+    min-width: 72px; 
+    padding: 5px 8px; 
+    border: 1px solid rgba(255,255,255,0.35); 
+    background: rgba(0,0,0,0.72); 
+    color: #fff; 
+    font-family: inherit; 
+    font-size: 11px; 
+    letter-spacing: 1px; 
+    pointer-events: none; 
+    user-select: none; 
+} 
+ 
+/* ========================================================= 
+   MOBILE CHARACTER SCALE FIX 
+   Characters are deliberately larger than the previous build. 
+========================================================= */
 
 /* Main menu, chapter hub, achievements and save carousels. */
 #title-screen { overflow: hidden; }
@@ -3241,6 +2611,7 @@ input:focus-visible {
 .carousel-arrow { flex: 0 0 48px; width: 48px; height: 58px; border: 1px solid #555; background: rgba(0,0,0,.8); color: #fff; font-size: 38px; line-height: 1; cursor: pointer; }
 .carousel-arrow:hover { border-color: #fff; background: #fff; color: #000; }
 #play-chapter-button { display: block; margin: 18px auto 0; border: 1px solid #555; }
+#play-chapter-button:disabled { opacity: .45; cursor: not-allowed; filter: grayscale(1); }
 #play-back-button { margin-top: 16px; }
 .achievement-list { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
 .achievement-card { min-height: 180px; padding: 18px 12px; border: 1px solid #444; background: rgba(0,0,0,.76); }
@@ -3261,160 +2632,34 @@ input:focus-visible {
 .save-preview-character { position: absolute; bottom: -8%; height: 96%; width: 48%; object-fit: contain; object-position: bottom; filter: drop-shadow(0 0 9px #000); }
 .save-preview-character.alice { left: 8%; }
 .save-preview-character.z { left: 44%; }
+.save-preview-character.corrode { left: 68%; }
+.save-chapter-filter { display:flex; align-items:center; justify-content:center; gap:18px; margin:8px 0 14px; color:#ddd; letter-spacing:2px; font-size:12px; }
+.save-chapter-filter[hidden] { display:none; }
 
 #fps-counter { position: absolute; top: 10px; left: 10px; display: none; }
-
-@media (max-width: 700px) {
-    .title-characters { right: -16vw; bottom: 0; width: 72vw; height: 72%; }
-    #title-screen:not(.title-gated) .title-content { width: 76%; margin-left: 4%; }
-    #title-screen:not(.title-gated) .game-title { font-size: clamp(34px, 8vw, 58px); letter-spacing: 2px; }
-    #title-screen:not(.title-gated) .title-menu { gap: 7px; }
-    #title-screen:not(.title-gated) .menu-button { width: min(250px, 64vw); padding: 10px 12px; font-size: 15px; }
-    .title-start-prompt { max-width: 92vw; font-size: 11px; letter-spacing: 1px; }
-    .achievement-list { grid-template-columns: 1fr; max-height: 42dvh; overflow-y: auto; }
-    .achievement-card { min-height: 100px; padding: 12px; text-align: left; }
-    .achievement-icon { float: left; margin: 7px 15px 15px 0; }
-    .chapter-card { width: 68vw; height: 34dvh; min-height: 190px; padding: 14px; }
-    .carousel-arrow { flex-basis: 38px; width: 38px; height: 48px; font-size: 31px; }
-    .save-content { width: 98vw; }
-    .save-carousel { gap: 5px; width: 98vw; }
-    .save-slots { width: 76vw; padding: 1px; }
-    .save-slot-wrapper { grid-template-columns: minmax(0,1fr) 48px; gap: 3px; }
-    .save-slot { padding: 8px; }
-    .save-slot-number { font-size: 9px; }
-    .save-slot-info { font-size: 9px; }
-    .save-delete-button { font-size: 8px; }
-    .save-preview { height: 22dvh; margin-top: 5px; }
-}
-
 .vn-menu-panel { overflow: hidden; }
 .vn-menu-art { position:absolute; z-index:0; right:-12%; bottom:-8%; width:min(72%,360px); max-height:100%; object-fit:contain; object-position:bottom; opacity:.42; pointer-events:none; }
 .vn-menu-title,.vn-menu-option { position:relative; z-index:1; }
- 
-/* ========================================================= 
-   FPS COUNTER 
-========================================================= */ 
- 
-#fps-counter { 
-    position: absolute; 
-    top: 12px; 
-    left: 12px; 
-    z-index: 300; 
-    min-width: 72px; 
-    padding: 5px 8px; 
-    border: 1px solid rgba(255,255,255,0.35); 
-    background: rgba(0,0,0,0.72); 
-    color: #fff; 
-    font-family: inherit; 
-    font-size: 11px; 
-    letter-spacing: 1px; 
-    pointer-events: none; 
-    user-select: none; 
-} 
- 
-/* ========================================================= 
-   MOBILE CHARACTER SCALE FIX 
-   Characters are deliberately larger than the previous build. 
-========================================================= */ 
- 
-@media (max-width: 700px) { 
-    .character { 
-        bottom: 112px; 
-        height: 68dvh; 
-        width: auto; 
-        max-width: 94vw; 
-        max-height: none; 
-    } 
- 
-    #alice { 
-        left: 50%; 
-    } 
- 
-    #alice.alice-right { 
-        left: 74%; 
-    } 
- 
-    #z { 
-        bottom: 116px; 
-        height: 62dvh; 
-        max-width: 76vw; 
-        max-height: none; 
-    } 
- 
-    #z.z-visible { 
-        left: 20%; 
-    } 
- 
-    #dialogue-box { 
-        bottom: 10px; 
-        min-height: 125px; 
-    } 
- 
-    #fps-counter { 
-        top: 8px; 
-        left: 8px; 
-        font-size: 10px; 
-    } 
- 
-    .credits-content { 
-        width: 94vw; 
-        max-height: 88dvh; 
-        padding: 25px 12px; 
-    } 
- 
-    .credits-grid-content { 
-        grid-template-columns: 1fr; 
-    } 
- 
-    #credits-grid { 
-        background-size: 130px 130px; 
-        opacity: 0.62; 
-        animation-duration: 6s; 
-    } 
-} 
- 
-@media (max-width: 400px) { 
-    .character { 
-        bottom: 105px; 
-        height: 66dvh; 
-        max-width: 96vw; 
-    } 
- 
-    #z { 
-        bottom: 108px; 
-        height: 59dvh; 
-        max-width: 82vw; 
-    } 
- 
-    .credits-title { 
-        font-size: 30px; 
-        margin-bottom: 24px; 
-    } 
- 
-    .credit-card { 
-        min-height: 90px; 
-        padding: 15px; 
-    } 
- 
-    .credit-name { 
-        font-size: 14px; 
-    } 
-} 
- 
-@media (max-height: 650px) and (orientation: landscape) { 
-    .character { 
-        bottom: 100px; 
-        height: 62vh; 
-    } 
- 
-    #z { 
-        bottom: 103px; 
-        height: 56vh; 
-    } 
- 
-    .credits-content { 
-        max-height: 94vh; 
-        padding-top: 15px; 
-        padding-bottom: 15px; 
-    } 
-} 
+
+/* Scene-specific lighting and the story cutscene. */
+#story-screen.shader-enabled.mouse-lit-background #background { filter: brightness(0.56) contrast(1.08); }
+#story-screen.cutscene-prep #background,
+#story-screen.cutscene-prep #weather,
+#story-screen.cutscene-prep #vignette,
+#story-screen.cutscene-prep #shader-layer { opacity: 0; transition: opacity 1.5s ease; }
+#story-screen.cutscene-prep #alice { animation: aliceCrawlOut 1.5s ease-in forwards; }
+#story-screen.cutscene-prep #alice.alice-right { animation-name: aliceCrawlOutRight; }
+#story-screen.cutscene-prep #z { left: 50%; transition: left 1.5s cubic-bezier(.22,1,.36,1); }
+#story-screen.cutscene-prep #dialogue-box,
+#story-screen.cutscene-playing #background,
+#story-screen.cutscene-playing #weather,
+#story-screen.cutscene-playing #vignette,
+#story-screen.cutscene-playing #shader-layer,
+#story-screen.cutscene-playing #characters,
+#story-screen.cutscene-playing #dialogue-box,
+#story-screen.cutscene-playing .vn-menu-button,
+#story-screen.cutscene-playing .vn-menu { opacity: 0; pointer-events: none; }
+.story-cutscene-video { position:absolute; inset:0; z-index:1000; width:100%; height:100%; display:none; object-fit:contain; background:#000; }
+#story-screen.cutscene-playing .story-cutscene-video { display:block; }
+@keyframes aliceCrawlOut { 0%{transform:translate(-50%,0) rotate(0)} 30%{transform:translate(-50%,8vh) rotate(10deg) scaleY(.78)} 100%{transform:translate(-190vw,12vh) rotate(12deg) scaleY(.72)} }
+@keyframes aliceCrawlOutRight { 0%{transform:translate(-50%,0) rotate(0)} 30%{transform:translate(-50%,8vh) rotate(-10deg) scaleY(.78)} 100%{transform:translate(190vw,12vh) rotate(-12deg) scaleY(.72)} }
