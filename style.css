@@ -3058,6 +3058,7 @@ input:focus-visible {
     animation: finalCreditsFade 1.5s ease forwards;
 }
 
+
 @keyframes finalCreditsFade {
     from { opacity: 1; }
     to { opacity: 0; }
@@ -3242,7 +3243,10 @@ input:focus-visible {
 .carousel-arrow:hover { border-color: #fff; background: #fff; color: #000; }
 #play-chapter-button { display: block; margin: 18px auto 0; border: 1px solid #555; }
 #play-back-button { margin-top: 16px; }
-.achievement-list { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+.achievement-list { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; max-height: min(58vh, 620px); overflow-y: auto; overscroll-behavior: contain; padding: 4px 12px 4px 4px; scrollbar-width: thin; scrollbar-color: rgba(190,220,220,.7) rgba(0,0,0,.45); }
+.achievement-list::-webkit-scrollbar { width: 9px; }
+.achievement-list::-webkit-scrollbar-track { background: rgba(0,0,0,.5); }
+.achievement-list::-webkit-scrollbar-thumb { border: 2px solid rgba(0,0,0,.65); background: rgba(190,220,220,.62); }
 .achievement-card { min-height: 180px; padding: 18px 12px; border: 1px solid #444; background: rgba(0,0,0,.76); }
 .achievement-card.locked { opacity: .52; }
 .achievement-icon { display: block; margin-bottom: 15px; color: #6dff3c; font-size: 30px; }
