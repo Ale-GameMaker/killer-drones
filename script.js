@@ -45,7 +45,7 @@ const BACKGROUNDS = {
     shards: "assets/backgrounds/shards.webp",
     outside: "assets/backgrounds/outside.jpg"
 };
-const MOUSE_LIT_BACKGROUNDS = new Set(["files"]);
+const MOUSE_LIT_BACKGROUNDS = new Set(["files", "shards"]);
 
 const SPRITES = {
     Alice: {
