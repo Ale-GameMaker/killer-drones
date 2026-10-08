@@ -3802,7 +3802,8 @@ function setMouseLightEnabled(enabled) {
 window.addEventListener("pointermove", updateShaderMouse, { passive: true });
 
 async function loadShaderSource(url) {
-    const response = await fetch(url);
+    // Shader edits must take effect immediately instead of reusing a stale cached fragment.
+    const response = await fetch(url, { cache: "no-store" });
     if (!response.ok) throw new Error(`Failed to load ${url}`);
     return await response.text();
 }
