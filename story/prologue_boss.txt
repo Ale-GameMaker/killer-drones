@@ -1,6 +1,6 @@
 # Chapter: Prologue
 @label corrode_battle
-@background files
+@background shards
 @weather none
 @music holyDrama
 
