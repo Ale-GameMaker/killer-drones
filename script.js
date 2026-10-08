@@ -45,7 +45,7 @@ const BACKGROUNDS = {
     shards: "assets/backgrounds/shards.webp",
     outside: "assets/backgrounds/outside.jpg"
 };
-const MOUSE_LIT_BACKGROUNDS = new Set(["files"]);
+const MOUSE_LIT_BACKGROUNDS = new Set(["files", "shards"]);
 
 const SPRITES = {
     Alice: {
@@ -3945,7 +3945,14 @@ function renderShaderFrame() {
         ];
         return { point, radius: rect.height / storyRect.height * 0.13 };
     };
-    const aliceEye = getEye(document.getElementById("alice"), 0.47, 0.405, true);
+    const aliceImage = document.getElementById("alice");
+    const aliceOpacity = aliceImage ? Number.parseFloat(getComputedStyle(aliceImage).opacity) : 0;
+    const aliceEye = getEye(
+        aliceImage,
+        0.47,
+        0.405,
+        aliceImage?.style.visibility !== "hidden" && aliceOpacity > 0.05
+    );
     const zImage = document.getElementById("z");
     const zEye = getEye(zImage, 0.49, 0.405, zImage?.classList.contains("z-visible"));
     gl.uniform2f(shaderUniforms.u_eyeAlice, aliceEye.point[0], aliceEye.point[1]);

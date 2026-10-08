@@ -2201,7 +2201,8 @@ input:focus-visible {
 }
 
 #story-screen.shader-enabled #characters .character {
-    filter: brightness(calc(0.48 + var(--mouse-light, 0) * 0.90)) contrast(1.05);
+    /* Eye light should illuminate characters; do not dim their source art. */
+    filter: brightness(calc(1 + var(--mouse-light, 0) * 0.45)) contrast(1.04);
 }
 
 #story-screen.shader-fallback #characters .character {
@@ -2209,7 +2210,8 @@ input:focus-visible {
 }
 
 #story-screen.shader-enabled #background {
-    filter: brightness(0.14) contrast(1.1);
+    /* Keep the environment visible; the eye-light shader adds atmosphere separately. */
+    filter: brightness(1) contrast(1.04);
 }
  
  
@@ -2737,3 +2739,31 @@ input:focus-visible {
     filter: blur(5px); animation: corrodeEyesPulse 1.8s ease-in-out infinite alternate;
 }
 @keyframes corrodeEyesPulse { from { filter: blur(3px); opacity: .68; } to { filter: blur(7px); opacity: 1; } }
+
+
+/* =========================================================
+   VISUAL FIX PASS 1
+   - Keep the crystal/background art readable with shaders enabled.
+   - Keep CRT scanlines behind the dialogue/UI instead of over the text.
+   - The character eye glow is managed by script.js visibility.
+========================================================= */
+#story-screen.shader-enabled #background,
+#story-screen.shader-enabled.mouse-lit-background #background {
+    filter: brightness(1) contrast(1.04);
+}
+
+#story-screen.shader-enabled #characters .character {
+    filter: brightness(calc(1 + var(--mouse-light, 0) * 0.45)) contrast(1.04);
+}
+
+#game::before {
+    z-index: 80;
+}
+
+#game::after {
+    z-index: 81;
+}
+
+#dialogue-box {
+    z-index: 100;
+}
