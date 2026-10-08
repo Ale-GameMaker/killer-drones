@@ -3877,7 +3877,8 @@ async function initShaderSystem() {
             u_eyeZ: gl.getUniformLocation(program, "u_eyeZ"),
             u_eyeRadiusAlice: gl.getUniformLocation(program, "u_eyeRadiusAlice"),
             u_eyeRadiusZ: gl.getUniformLocation(program, "u_eyeRadiusZ"),
-            u_aspect: gl.getUniformLocation(program, "u_aspect")
+            u_aspect: gl.getUniformLocation(program, "u_aspect"),
+            u_keepBrightScene: gl.getUniformLocation(program, "u_keepBrightScene")
         };
 
         shaderGL = {
@@ -3960,6 +3961,10 @@ function renderShaderFrame() {
     gl.uniform1f(shaderUniforms.u_eyeRadiusAlice, aliceEye.radius);
     gl.uniform1f(shaderUniforms.u_eyeRadiusZ, zEye.radius);
     gl.uniform1f(shaderUniforms.u_aspect, storyRect.width / storyRect.height);
+    gl.uniform1f(
+        shaderUniforms.u_keepBrightScene,
+        document.getElementById("story-screen")?.classList.contains("mouse-lit-background") ? 1 : 0
+    );
 
     gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
     gl.enableVertexAttribArray(aPos);
