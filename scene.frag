@@ -8,6 +8,7 @@ uniform vec2 u_eyeZ;
 uniform float u_eyeRadiusAlice;
 uniform float u_eyeRadiusZ;
 uniform float u_aspect;
+uniform float u_keepBrightScene;
 
 varying vec2 v_position;
 
@@ -29,6 +30,9 @@ void main() {
     float eyeGlow = max(aliceGlow, zGlow);
 
     vec3 color = mix(vec3(reflection * 0.55), vec3(0.08, 1.0, 0.015), eyeGlow * 0.90);
-    float opacity = clamp(0.38 * (1.0 - light) + eyeGlow * 0.50 + reflection * 0.2, 0.0, 0.88);
+    float ambientDarkness = 0.38 * (1.0 - light);
+    // Crystal/files scenes must stay readable; keep the eye glow but remove the fullscreen dark veil.
+    ambientDarkness *= 1.0 - u_keepBrightScene;
+    float opacity = clamp(ambientDarkness + eyeGlow * 0.50 + reflection * 0.2, 0.0, 0.88);
     gl_FragColor = vec4(color, opacity);
 }
