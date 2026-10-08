@@ -358,6 +358,7 @@ No puedo cerrarlo sola. Hay que invertir las tres notas en la cámara repetidora
 [/es-419]
 
 @achievement uneasyAlliance
+@background shards
 Alice @sprite 006
 
 [en]
